@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin valdymo pultas</title>
+</head>
+<body>
+    <h1>Sveiki atvykę į administratoriaus valdymo pultą!</h1>
+    
+    <p>Prisijungęs vartotojas: {{ current_user.user_name }} {{ current_user.user_lastname }}</p>
+
+    <a href="{{ url_for('logout') }}">Atsijungti</a>
+</body>
+</html>
