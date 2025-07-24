@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'futbolas'
 
 # Set Databse patch and data
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://mrka_esu:Labasrytas12345@93.127.213.123:3306/mrka_eshop'
+app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///D:/AI studijos/2-tarpinis/data/database.db' #'mysql+pymysql://mrka_esu:Labasrytas12345@93.127.213.123:3306/mrka_eshop'
 
 class Base(DeclarativeBase):
     createdBy = Column(String(50), nullable=False, default='System')
