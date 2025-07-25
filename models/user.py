@@ -12,6 +12,8 @@ class User(UserMixin, db.Model):
     user_email = db.Column(db.String(255), nullable=False, unique=True)
     user_password = db.Column(db.String(100), nullable=False)
     user_role = db.Column(db.Integer, default=2, nullable=False)
+    login_attempts = db.Column(db.Integer, default=0)
+    blocked_until = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         self.user_password = generate_password_hash(password)

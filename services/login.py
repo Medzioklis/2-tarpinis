@@ -5,6 +5,7 @@ from sqlalchemy import select, func
 from flask_admin.contrib.sqla import ModelView
 from models.user import User
 from forms.login_form import LoginForm
+from datetime import datetime, timedelta
 
 
 class ProtectedModelView(ModelView):
@@ -35,16 +36,34 @@ def login():
         stmt = select(User).where(User.user_email == form.email.data)
         user = db.session.execute(stmt).scalar_one_or_none()
 
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            if user.user_role == 1:
-                return redirect(url_for('admin_dashboard'))
+        now = datetime.now()
+        if user:
+            if user.blocked_until and user.blocked_until > now:
+                time_left = int((user.blocked_until - now).total_seconds() // 60)
+                flash(f"Per daug neteisingų bandymų. Bandykite po {time_left} min.", "danger")
+                return render_template('login.html', form=form)
+
+            if user and user.check_password(form.password.data):
+                user.login_attempts = 0
+                user.blocked_until = None
+                db.session.commit()
+                login_user(user)
+                return redirect(url_for('admin_dashboard') if user.user_role == 1 else url_for('user_dashboard'))
             else:
-                return redirect(url_for('user_dashboard'))
+                user.login_attempts = (user.login_attempts or 0) + 1
+                if user.login_attempts >= 3:
+                    user.blocked_until = now + timedelta(minutes=2)
+                    flash("Per daug neteisingų bandymų. Pabandykite po 2 minučių.", "danger")
+                    return redirect(url_for('user_dashboard'))
+                else:
+                    flash("Neteisingi prisijungimo duomenys.", "danger")
+                db.session.commit()
         else:
-            flash("Neteisingi prisijungimo duomenys.", "danger")
+            flash("Vartotojas nerastas.", "danger")
+            return render_template("login.html", form=form)
 
     return render_template('login.html', form=form)
+
 
 @app.route('/admin_dashboard')
 @login_required
