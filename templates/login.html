@@ -1,57 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="lt">
 <head>
+    <meta charset="UTF-8">
     <title>Prisijungimas</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 50px; }
-        .form-group { margin-bottom: 15px; }
-        .error { color: red; font-size: 0.9em; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px auto;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        .success {
+            color: green;
+            font-size: 0.9em;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+        .message {
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
     <h2>Prisijungimas</h2>
 
-    <form method="POST">
+    <form method="POST" action="{{ url_for('login.login') }}">
         {{ form.hidden_tag() }}
 
         <div class="form-group">
             {{ form.email.label }}<br>
             {{ form.email(size=32) }}<br>
-            {% if form.email.errors %}
-                <div class="error">
-                    {% for error in form.email.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            {% for error in form.email.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
         </div>
 
         <div class="form-group">
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}<br>
-            {% if form.password.errors %}
-                <div class="error">
-                    {% for error in form.password.errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+            {% for error in form.password.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
         </div>
 
         <div class="form-group">
-            {{ form.submit() }}
+            {{ form.submit(class_="btn") }}
         </div>
     </form>
-
-    {% if current_user.is_authenticated %}
-        <p><a href="{{ url_for('logout') }}">Atsijungti</a></p>
-    {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul>
                 {% for category, message in messages %}
-                    <li class="error">{{ message }}</li>
+                    <li class="message {{ category }}">{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
