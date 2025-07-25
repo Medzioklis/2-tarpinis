@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Vartotojo pagrindinis{% endblock %}
+
+{% block content %}
+    <h1>Sveiki..</h1>
+    
+    <p>Užsiregistravęs vartotojas: {{ user.user_name }} {{ user.user_lastname }} jūsų paštas: {{user.user_email}}</p>
+
+    <a href="{{ url_for('login.login') }}">Eiti prisijungti ..</a>
+{% endblock %}

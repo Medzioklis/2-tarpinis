@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Vartotojo pagrindinis{% endblock %}
+
+{% block content %}
+    <h1>Sveiki prisijunge..</h1>
+    
+    <p>Prisijungęs vartotojas: {{ current_user.user_name }} {{ current_user.user_lastname }}</p>
+
+    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+{% endblock %}
