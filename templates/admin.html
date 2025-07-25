@@ -4,6 +4,11 @@
 
 {% block content %}
     <h2>Sveiki prisijunge!<br />
+            <div class="error">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
         Vardas: {{user.user_name}}<br />
         Pavarde: {{user.user_lastname}}<br />
         Pastas: {{user.user_email}}</h2>
