@@ -11,6 +11,7 @@ class User(db.Model, UserMixin):
     user_email = db.Column(db.String(50), nullable=False, unique=True)
     user_password = db.Column(db.String(255), nullable=False)
     user_role = db.Column(db.Integer, default=2)
+    is_admin = db.Column(db.Boolean, default=False) # --- PRIDĖTA Flask-admin ---
 
 
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user', cascade="all, delete-orphan")

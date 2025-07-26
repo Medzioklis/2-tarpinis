@@ -1,8 +1,8 @@
-"""init
+"""login ir register
 
-Revision ID: 133c81c45214
+Revision ID: dcb0f09d72ef
 Revises: 
-Create Date: 2025-07-25 20:38:59.681534
+Create Date: 2025-07-26 11:36:16.080764
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '133c81c45214'
+revision = 'dcb0f09d72ef'
 down_revision = None
 branch_labels = None
 depends_on = None

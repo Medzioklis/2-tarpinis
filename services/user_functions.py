@@ -1,8 +1,9 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user
+from flask_admin.contrib.sqla import ModelView
 from werkzeug.security import generate_password_hash
 from sqlalchemy import select
-from database import db, login_manager
+from database import db, login_manager, admin
 from datetime import datetime, timedelta
 from models.user_class import User
 from models.login_security_class import LoginSecurity
@@ -12,6 +13,10 @@ from forms.login_form import LoginForm
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
+
+def add_view_admin():
+    return admin.add_view(ModelView(User, db.session))
+
 
 def add_user():
     form = RegisterForm()
