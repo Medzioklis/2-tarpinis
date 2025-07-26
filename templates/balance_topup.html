@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h3>Balanso papildymas</h3>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.amount.label }}<br>
+            {{ form.amount(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-success") }}
+    </form>
+</div>
+{% endblock %}

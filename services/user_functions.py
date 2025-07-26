@@ -8,6 +8,8 @@ from models.user_class import User
 from models.login_security_class import LoginSecurity
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
+from forms.balance_form import BalanceForm
+from decimal import Decimal
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -92,3 +94,13 @@ def user_login():
             return render_template("login.html", form=form)
 
     return render_template('login.html', form=form)
+
+
+def top_up_balance():
+    form = BalanceForm()
+    if form.validate_on_submit():
+        amount = Decimal(form.amount.data)
+        current_user.balance += float(amount)
+        db.session.commin()
+        flash(f"Sėkmingai papildyta {amount:.2f} €.", "success")
+    return render_template('balance_topup.html', form=form)

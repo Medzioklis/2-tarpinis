@@ -12,3 +12,13 @@ def user_dashboard():
         flash("Neturite prieigos prie naudotojo puslapio.", "danger")
         return redirect(url_for('login'))
     return render_template('user_dashboard.html', user=current_user)
+
+@user_bp.route('/balance')
+@login_required
+def view_balance():
+    return render_template('balance_view.html', balance=current_user.balance)
+
+@user_bp.route('/add_balance', methods = ['GET','POST'])
+def top_up_balance():
+    return render_template('user_dashboard.html')
+
