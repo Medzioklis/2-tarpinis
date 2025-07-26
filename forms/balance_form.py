@@ -1,4 +1,3 @@
-# forms/balance_form.py
 
 from flask_wtf import FlaskForm
 from wtforms import DecimalField, SubmitField

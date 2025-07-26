@@ -2,6 +2,7 @@
 {% block content %}
 <div class="container mt-5">
     <h3>Jūsų balansas: {{ balance }} €</h3>
-    <a href="{{ url_for('user.top_up_balance') }}" class="btn btn-primary mt-3">Papildyti balansą</a>
+    <a href="{{ url_for('user.add_balance') }}" class="btn btn-primary mt-3">Papildyti balansą</a>
 </div>
 {% endblock %}
+

@@ -99,8 +99,17 @@ def user_login():
 def top_up_balance():
     form = BalanceForm()
     if form.validate_on_submit():
-        amount = Decimal(form.amount.data)
-        current_user.balance += float(amount)
-        db.session.commin()
+        amount = float(form.amount.data)
+        if current_user.user_balance is None:
+            current_user.user_balance = 0.0
+        current_user.user_balance += amount
+        db.session.commit()
         flash(f"Sėkmingai papildyta {amount:.2f} €.", "success")
+        return redirect(url_for('user.user_dashboard'))
+    
     return render_template('balance_topup.html', form=form)
+
+# amount = float(form.amount.data)  # vietoj Decimal
+# if current_user.user_balance is None:
+#     current_user.user_balance = 0.0
+# current_user.user_balance += amount
