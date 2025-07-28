@@ -22,7 +22,7 @@
     {% endwith %}
     <h1>Sveiki, {{ user.user_name }} {{ user.user_lastname }}!</h1>
 
-    <!-- Balansas ir papildymo mygtukas kampe, bet žemiau -->
+    <!-- Balansas ir papildymo mygtukas kampe -->
     <div style="position: fixed; top: 80px; right: 10px; background: transparent; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); text-align: center; z-index: 1100;">
       <p><strong>Jūsų balansas:</strong> {{ "%.2f"|format(user.user_balance or 0) }} €</p>
       <a href="{{ url_for('user.add_balance') }}">
