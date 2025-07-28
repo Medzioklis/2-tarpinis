@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold my-6">Administratoriaus Panelė</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-xl font-semibold mb-2">Vartotojai</h2>
+            <p class="text-3xl font-bold">{{ stats.user_count }}</p>
+            <a href="{{ url_for('admin.user_list') }}" class="text-blue-500 hover:underline mt-4 inline-block">Valdyti vartotojus</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

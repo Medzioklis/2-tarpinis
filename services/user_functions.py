@@ -15,6 +15,12 @@ from decimal import Decimal
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
+def admin_required():
+    if not current_user.is_authenticated or current_user.user_role != 1:
+        flash("Neturite prieigos prie šio puslapio.", "danger")
+        return redirect(url_for('home.index'))
+    return True
+ 
 def add_user():
     form = RegisterForm()
     if form.validate_on_submit():

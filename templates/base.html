@@ -13,11 +13,11 @@
                 <li><a href="../">Pagrindinis</a></li>
                 {% if current_user.is_authenticated %}
                     {% if current_user.user_role == 1 %}
-                    <a href="{{ url_for('admin.admin_dashboard') }}">Admin panėlė</a>
-                    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+                    <li><a href="{{ url_for('admin.dashboard') }}">Admin panėlė</a></li>
+                    <li><a href="{{ url_for('logout.logout') }}">Atsijungti</a></li>
                     {% else %}
-                    <a href="{{ url_for('user.user_dashboard') }}">Vartotojo skydas</a>
-                    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+                    <li><a href="{{ url_for('user.user_dashboard') }}">Vartotojo skydas</a></li>
+                    <li><a href="{{ url_for('logout.logout') }}">Atsijungti</a></li>
                     {% endif %}
                 {% else %}
                 <li><a href="../login">Prisijungti</a></li>
