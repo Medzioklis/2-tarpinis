@@ -1,12 +1,9 @@
-{% extends "base.html" %}
-
-{% block title %}Admin valdymo pultas{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-    <h1>Sveiki atvykę į administratoriaus valdymo pultą!</h1>
-    
-    <p>Prisijungęs vartotojas: {{ current_user.user_name }} {{ current_user.user_lastname }}</p>
-    <p>{{view}}</p>
-
-    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+    <div class="text-center">
+        <h1>Sveiki, {{ current_user.user_name }}!</h1>
+        <p>Jūs sėkmingai prisijungėte prie savo paskyros.</p>
+        <p>Jūsų el. paštas: {{ current_user.user_email }}</p>
+        <a href="/admin" class="btn btn-info">Eiti į Admin Panelę</a>
+    </div>
 {% endblock %}

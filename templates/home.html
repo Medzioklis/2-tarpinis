@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="p-5 mb-4 bg-light rounded-3 text-center">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Sveiki atvykę!</h1>
+            <p class="fs-4">Tai demonstracinė futbolo prekių internetinė parduotuvė.</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('login.login') }}" class="btn btn-primary btn-lg">Pradėkite dabar</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

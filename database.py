@@ -1,20 +1,20 @@
 from flask import Flask
-from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.orm import DeclarativeBase
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_login import LoginManager
 from flask_admin import Admin
+from flask_migrate import Migrate
 import datetime
 
-
-# initialize first flask
+# Aplikacijos konfiguracija
 app = Flask(__name__)
-app.secret_key = 'futbolas'
+app.config['SECRET_KEY'] = 'futbolas'  # Slaptas raktas sesijoms
 
-# Set Databse patch and data
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ugne:Labasrytas2025!@35.242.231.50:3306/futbolas'
+# Duomenų bazės kelias
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://marius:Labasrytas2025!@35.242.231.50:3306/futbolas'
 
+# cia ikeliam base kad visom lentelems kurtu
 class Base(DeclarativeBase):
     createdBy = Column(String(50), nullable=False, default='System')
     modifiedBy = Column(String(50), nullable=False, default='System')
@@ -22,13 +22,19 @@ class Base(DeclarativeBase):
     modifiedDate = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     deleted = Column(Boolean, default=False)
 
-login_manager = LoginManager(app) # Tai sukuria LoginManager objektą ir pririša jį prie Flask aplikacijos. Šis objektas atsakingas už prisijungimo valdymą, naudotojo sesijos atkūrimą, nukreipimą į prisijungimo puslapį, jei naudotojas neprisijungęs.
-login_manager.init_app(app)       # šita eilutė inicijuoja LoginManager su Flask aplikacija
+# Startuojame (Inicializuojame) pletinius (Extensionus)
+# Flask-login
+login_manager = LoginManager()
+login_manager.init_app(app)
 login_manager.login_view = 'login' # nurodo kurį route naudoti, kai neprisijungęs naudotojas bando pasiekti saugomą puslapį.
+# Pranešimo kategorija ir tekstas
+login_manager.login_message = "Prašome prisijungti, kad pasiektumėte šį puslapį."
+login_manager.login_message_category = "info"
 
-# Administracinės sąsajos sukūrimas
-admin = Admin(app, name='Mano Projektas', template_mode='bootstrap4', endpoint='admin_panel')
+# Inicializuojame Admin sąsają
+admin = Admin(app, name='Vartotojų Valdymas', template_mode='bootstrap4')
 
-db = SQLAlchemy(app, model_class=Base)
+# SQLAlchemy
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
