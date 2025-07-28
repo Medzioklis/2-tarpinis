@@ -8,6 +8,8 @@ from models.user_class import User
 from models.login_security_class import LoginSecurity
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
+from forms.balance_form import BalanceForm
+from decimal import Decimal
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -92,3 +94,19 @@ def user_login():
             return render_template("login.html", form=form)
 
     return render_template('login.html', form=form)
+
+# Sukuriama balanso papildymo forma pagal WTForms klasę `BalanceForm`
+def top_up_balance():
+    form = BalanceForm()
+    if form.validate_on_submit():
+        amount = float(form.amount.data)
+        # Tikrina, jeigu naudotojo balansas neegzistuoja (None), priskiriama default reikšmė 0.0 €
+        if current_user.user_balance is None:
+            current_user.user_balance = 0.0
+        # Pridedama papildymo suma prie esamo naudotojo balanso
+        current_user.user_balance += amount
+        db.session.commit()
+        flash(f"Sėkmingai papildyta {amount:.2f} €.", "success")
+        return redirect(url_for('user.user_dashboard'))
+    
+    return render_template('balance_topup.html', form=form)

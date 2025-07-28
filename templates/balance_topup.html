@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Balanso papildymas{% endblock %}
+
+{% block content %}
+  <h1>Balanso papildymas</h1>
+  
+  <p>Prisijungęs vartotojas: {{ current_user.user_name }} {{ current_user.user_lastname }}</p>
+  <p>Jūsų balansas: {{ "%.2f"|format(current_user.user_balance or 0) }} €</p>
+
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <p>
+  {{ form.amount.label }}<br>
+  {{ form.amount(size=20) }}
+  <small style="color: gray;">* Minimalus papildymas yra 0.01 €</small>
+    </p>
+    <p><input type="submit" value="Papildyti"></p>
+  </form>
+        <a href="{{ url_for('user.user_dashboard') }}">
+        <button type="button" style="padding: 6px 12px; background-color: #6c757d; color: white; border: none; border-radius: 4px; margin-right: 10px;">
+        Grįžti atgal
+      </button>
+    </a>
+{% endblock %}
