@@ -1,11 +1,11 @@
-from product import Product
+from flask_wtf import FlaskForm
+from wtforms import StringField, FloatField, IntegerField, SubmitField
+from wtforms.validators import DataRequired
 
-def create_product_from_input():
-    id = input("Įveskite prekės ID: ")
-    name = input("Įveskite prekės pavadinimą: ")
-    description = input("Įveskite prekės aprašymą: ")
-    price = float(input("Įveskite prekės kainą: "))
-    quantity = int(input("Įveskite užsakytą kiekį: "))
-    stock_left = int(input("Įveskite sandėlio likutį: "))
-
-    return Product(id, name, description, price, quantity, stock_left)
+class ProductForm(FlaskForm):
+    name = StringField('Pavadinimas', validators=[DataRequired()])
+    description = StringField('Aprašymas')
+    price = FloatField('Kaina', validators=[DataRequired()])
+    quantity = IntegerField('Užsakytas kiekis', validators=[DataRequired()])
+    stock_left = IntegerField('Sandėlio likutis', validators=[DataRequired()])
+    submit = SubmitField('Išsaugoti')

@@ -1,11 +1,14 @@
-class Product:
-    def __init__(self, id, name, description, price, quantity, stock_left):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.price = price
-        self.quantity = quantity
-        self.stock_left = stock_left
+from database import db
 
-    def __str__(self):
-        return f"{self.name} (ID: {self.id}) – {self.description} | {self.price} EUR | Užsakyta: {self.quantity}, Sandėlyje: {self.stock_left}"
+class Product(db.Model):
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255))
+    price = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    stock_left = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<Product {self.name}>'
