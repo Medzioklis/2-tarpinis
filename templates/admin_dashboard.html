@@ -6,6 +6,4 @@
     <h1>Sveiki atvykę į administratoriaus valdymo pultą!</h1>
     
     <p>Prisijungęs vartotojas: {{ current_user.user_name }} {{ current_user.user_lastname }}</p>
-
-    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
 {% endblock %}

@@ -10,8 +10,19 @@
         <nav>
             <a href="/" class="logo">Shopas</a>
             <ul>
-                <li><a href="/">Pagrindinis</a></li>
+                <li><a href="../">Pagrindinis</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.user_role == 1 %}
+                    <a href="{{ url_for('admin.admin_dashboard') }}">Admin panėlė</a>
+                    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+                    {% else %}
+                    <a href="{{ url_for('user.user_dashboard') }}">Vartotojo skydas</a>
+                    <a href="{{ url_for('logout.logout') }}">Atsijungti</a>
+                    {% endif %}
+                {% else %}
+                <li><a href="../login">Prisijungti</a></li>
                 <li><a href="../register/add_user">Registruotis</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
