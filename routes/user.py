@@ -3,21 +3,17 @@ from flask_login import login_required, current_user
 from services.user_functions import top_up_balance
 
 
-user_bp = Blueprint('user', __name__, url_prefix='/user', template_folder='../templates')
+user_bp = Blueprint('user', __name__, url_prefix='/user')
 
 
 @user_bp.route('/')
 @login_required
-def user_dashboard():
+def dashboard():
     if current_user.user_role != 2:
         flash("Neturite prieigos prie naudotojo puslapio.", "danger")
-        return redirect(url_for('login.login'))
-    return render_template('user_dashboard.html', user=current_user)
+        return redirect(url_for('auth.login'))
+    return render_template('user/dashboard.html', user=current_user)
 
-@user_bp.route('/balance')
-@login_required
-def view_balance():
-    return render_template('balance_view.html', balance=current_user.balance)
 
 @user_bp.route('/add_balance', methods = ['GET','POST'])
 @login_required

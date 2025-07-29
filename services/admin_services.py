@@ -1,9 +1,10 @@
 from werkzeug.security import generate_password_hash
 from models.user_class import User, db
+from sqlalchemy import select
 
 def get_all_users():
     """Gražina visų vartotojų sąrašą."""
-    return User.query.all()
+    return db.session.execute(select(User)).scalars().all()
 
 def get_user_by_id(user_id):
     """Gražina vartotoją pagal ID."""
