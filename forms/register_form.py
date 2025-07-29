@@ -8,5 +8,5 @@ class RegisterForm(FlaskForm):
     email = StringField('El. paštas', validators=[DataRequired(), Email()])
     password1 = PasswordField('Slaptažodis',validators=[DataRequired('Slaptažodis būtinas'), Length(min=8, message='Slaptažodis turi būti bent 8 simbolių ilgio')])
     password2 = PasswordField('Slaptažodis',validators=[DataRequired('Slaptažodis būtinas'), Length(min=8, message='Slaptažodis turi būti bent 8 simbolių ilgio')])
-    submit = SubmitField('Registruotis')
+    submit = SubmitField('Priregistruoti')
 

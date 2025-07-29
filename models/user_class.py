@@ -16,8 +16,6 @@ class User(db.Model, UserMixin):
 
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user', cascade="all, delete-orphan")
 
-    def set_password(self, password):
-        self.user_password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.user_password, password)

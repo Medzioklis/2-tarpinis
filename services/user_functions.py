@@ -36,22 +36,23 @@ def add_user():
                 password = generate_password_hash(password1, method='pbkdf2:sha256')
             else:
                 flash("Slaptažodžiai nesutampa!", 'alert')
-                return render_template('add_user.html', form=form)
+                return render_template('auth/register.html', form=form)
             new_user = User(user_name=name, user_lastname=lastname, user_email=email, user_password=password)
             db.session.add(new_user)
             db.session.commit()
-            return render_template('registered_sucess.html', user=new_user)
+            flash('Sveikiname, sėkmingai užsiregistravote! Dabar galite prisijungti.', 'success')
+            return redirect(url_for('auth.login'))
         else:
             flash("Vartotojas su tokiu el. paštu jau egzistuoja.", 'alert')
-            return render_template('add_user.html', form=form)
-    return render_template('add_user.html', form=form)
+            return render_template('auth/register.html', form=form)
+    return render_template('auth/register.html', form=form)
 
 def user_login():
     form= LoginForm()
     if current_user.is_authenticated:
         # Automatiškai nukreipti pagal rolę
         if current_user.user_role ==1:
-            return redirect(url_for('admin.admin_dashboard'))
+            return redirect(url_for('admin.dashboard'))
         else:
             return redirect(url_for('user.user_dashboard'))
 
@@ -66,7 +67,7 @@ def user_login():
             if login_security and login_security.blocked_until and login_security.blocked_until > now:
                 time_left = int((login_security.blocked_until - now).total_seconds() // 60)
                 flash(f"Per daug neteisingų bandymų. Bandykite po {time_left} min.", "danger")
-                return render_template('login.html', form=form)
+                return render_template('auth/login.html', form=form)
 
             if user.check_password(form.password.data):
                 if not login_security:
@@ -77,7 +78,7 @@ def user_login():
                 login_security.blocked_until = None
                 db.session.commit()
                 login_user(user)
-                return redirect(url_for('admin.admin_dashboard') if user.user_role == 1 else url_for('user.user_dashboard'))
+                return redirect(url_for('admin.dashboard') if user.user_role == 1 else url_for('user.user_dashboard'))
 
             else:
                 if not login_security:
@@ -90,16 +91,16 @@ def user_login():
                     login_security.blocked_until = now + timedelta(minutes=2)
                     flash("Per daug neteisingų bandymų. Pabandykite po 2 minučių.", "danger")
                     db.session.commit()
-                    return redirect(url_for('login.login'))  # Ne redirect'as į dashboard, jei klaidinga
+                    return redirect(url_for('auth.login'))  # Ne redirect'as į dashboard, jei klaidinga
 
                 else:
                     flash("Neteisingi prisijungimo duomenys.", "danger")
                 db.session.commit()
         else:
             flash("Vartotojas nerastas.", "danger")
-            return render_template("login.html", form=form)
+            return render_template("auth/login.html", form=form)
 
-    return render_template('login.html', form=form)
+    return render_template('auth/login.html', form=form)
 
 # Sukuriama balanso papildymo forma pagal WTForms klasę `BalanceForm`
 def top_up_balance():
