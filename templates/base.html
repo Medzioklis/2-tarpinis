@@ -41,6 +41,11 @@
                         {% if current_user.user_role == 1 %}
                             <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-grey-400 transition duration-300">Admin Panelė</a>
                         {% endif %}
+                        {% if current_user.user_role == 2 %}
+                            <h3>Jūsų balansas: {{ current_user.user_balance }} €</h3>
+                            <a href="{{ url_for('user.add_balance') }}" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Papildyti balansą</a>
+                            <a href="user/cart.html" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Krepšelis</a>
+                        {% endif %}
         
                     
                         <a href="{{ url_for('auth.logout') }}" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Atsijungti</a>

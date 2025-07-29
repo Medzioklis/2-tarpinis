@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from forms.user_crud_form import AddUserForm, UpdateUserForm, db # Pakeiskite 'your_app'
 from services import admin_services # Importuojame servisus
-from services.user_functions import admin_required
+from services.auth_functions import admin_required
 from sqlalchemy import select, func
 from models.user_class import User
 

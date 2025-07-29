@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, flash
-from services.user_functions import user_login, add_user
+from services.auth_functions import user_login, add_user
 from flask_login import logout_user
 
 auth_bp = Blueprint('auth', __name__)
