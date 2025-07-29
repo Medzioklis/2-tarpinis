@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title or 'E-Parduotuvė' }}</title>
+    <title>{{ title or 'Futbolo e-parduotuvė' }}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -38,8 +38,8 @@
                 <!-- Antrinės navigacijos nuorodos (dešinėje) -->
                 <div class="hidden md:flex items-center space-x-3 ">
                     {% if current_user.is_authenticated %}
-                        {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-purple-500 rounded hover:bg-purple-400 transition duration-300">Admin Panelė</a>
+                        {% if current_user.user_role == 1 %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-grey-400 transition duration-300">Admin Panelė</a>
                         {% endif %}
         
                     
