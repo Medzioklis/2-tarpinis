@@ -1,0 +1,19 @@
+{# This macro renders a form field with its label, input, and errors. #}
+{% macro render_field(field) %}
+  <div class="mb-4">
+    {# Render the label for the field #}
+    {{ field.label(class="block text-sm font-bold text-gray-700 mb-2") }}
+    
+    {# Render the input field itself. kwargs allows passing extra HTML attributes like 'class'. #}
+    {{ field(**kwargs)|safe }}
+    
+    {# Check if there are validation errors for this field and display them #}
+    {% if field.errors %}
+      <ul class="text-red-500 text-xs italic mt-2">
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}

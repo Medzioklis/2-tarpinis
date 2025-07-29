@@ -2,35 +2,94 @@
 <html lang="lt">
 <head>
     <meta charset="UTF-8">
-    <title>Prisijungimas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or 'E-Parduotuvė' }}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Papildomi stiliai, jei reikia, pavyzdžiui, pranešimų animacijai */
+        .flash-message {
+            animation: fadeOut 5s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="/" class="logo">Shopas</a>
-            <ul>
-                <li><a href="../">Pagrindinis</a></li>
-                {% if current_user.is_authenticated %}
-                    {% if current_user.user_role == 1 %}
-                    <li><a href="{{ url_for('admin.dashboard') }}">Admin panėlė</a></li>
-                    <li><a href="{{ url_for('logout.logout') }}">Atsijungti</a></li>
-                    {% else %}
-                    <li><a href="{{ url_for('user.user_dashboard') }}">Vartotojo skydas</a></li>
-                    <li><a href="{{ url_for('logout.logout') }}">Atsijungti</a></li>
-                    {% endif %}
-                {% else %}
-                <li><a href="../login">Prisijungti</a></li>
-                <li><a href="../register/add_user">Registruotis</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
-        {% block content %}
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-7">
+                    <div>
+                        <!-- Svetainės logotipas -->
+                        <a href="{{ url_for('home.index') }}" class="flex items-center py-4 px-2">
+                            <span class="font-semibold text-gray-500 text-lg">Futbolo prekės</span>
+                        </a>
+                    </div>
+                    <!-- Pagrindinės navigacijos nuorodos -->
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="{{ url_for('home.index') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Pagrindinis</a>
+                    </div>
+                </div>
+                <!-- Antrinės navigacijos nuorodos (dešinėje) -->
+                <div class="hidden md:flex items-center space-x-3 ">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-purple-500 rounded hover:bg-purple-400 transition duration-300">Admin Panelė</a>
+                        {% endif %}
         
-        {% endblock %}
-    <footer>
-        <p>&copy; 2025 Footeris.</p>
-    </footer>
+                    
+                        <a href="{{ url_for('auth.logout') }}" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Atsijungti</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="py-2 px-2 font-medium text-gray-500 rounded hover:bg-gray-200 transition duration-300">Prisijungti</a>
+                        <a href="{{ url_for('auth.register') }}" class="py-2 px-2 font-medium text-white bg-green-500 rounded hover:bg-green-400 transition duration-300">Registruotis</a>
+                    {% endif %}
+                </div>
+                <!-- Mobiliosios versijos meniu mygtukas -->
+                <div class="md:hidden flex items-center">
+                    <button class="outline-none mobile-menu-button">
+                    <svg class=" w-6 h-6 text-gray-500 hover:text-green-500 "
+                        x-show="!showMenu"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-6 px-4">
+        <!-- Pranešimų (flashed messages) rodymas -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for category, message in messages %}
+                    {% set bg_color = 'bg-blue-500' %}
+                    {% if category == 'success' %}{% set bg_color = 'bg-green-500' %}{% endif %}
+                    {% if category == 'danger' %}{% set bg_color = 'bg-red-500' %}{% endif %}
+                    {% if category == 'info' %}{% set bg_color = 'bg-blue-500' %}{% endif %}
+                    <div class="flash-message {{ bg_color }} text-white p-3 rounded-lg" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Blokuojamas turinys, kurį užpildys kiti šablonai -->
+        {% block content %}{% endblock %}
+    </main>
+
 </body>
 </html>

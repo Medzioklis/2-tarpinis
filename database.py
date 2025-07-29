@@ -24,7 +24,7 @@ class Base(DeclarativeBase):
 
 login_manager = LoginManager(app) # Tai sukuria LoginManager objektą ir pririša jį prie Flask aplikacijos. Šis objektas atsakingas už prisijungimo valdymą, naudotojo sesijos atkūrimą, nukreipimą į prisijungimo puslapį, jei naudotojas neprisijungęs.
 login_manager.init_app(app)       # šita eilutė inicijuoja LoginManager su Flask aplikacija
-login_manager.login_view = 'login' # nurodo kurį route naudoti, kai neprisijungęs naudotojas bando pasiekti saugomą puslapį.
+login_manager.login_view = 'home.index' # nurodo kurį route naudoti, kai neprisijungęs naudotojas bando pasiekti saugomą puslapį.
 
 db = SQLAlchemy(app, model_class=Base)
 migrate = Migrate(app, db)

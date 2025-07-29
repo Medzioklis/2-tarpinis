@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Pradinis Puslapis{% endblock %}
-
 {% block content %}
-    <h2>Sveiki atvykę!</h2>
-    <p>    Tai jūsų pradinis puslapis su siaubingu dizainu ir meniu viršuje.</p>
+<div class="bg-white p-8 rounded-lg shadow-lg text-center">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Sveiki atvykę į futbolo prekių parduotuvę!</h1>
+    <p class="text-gray-600 mb-6">Geriausios prekės už geriausią kainą. Naršykite mūsų katalogą ir raskite tai, ko ieškote.</p>
+    <a href="#" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">  
+        Žiūrėti prekes
+    </a>
+</div>
 {% endblock %}
+
+<!-- url_for('main.products')  bus vietoj # ziureti prekes -->
