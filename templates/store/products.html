@@ -1,61 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto px-4 sm:px-8">
-    <div class="py-8">
-        <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-semibold leading-tight">Prekių valdymas</h2>
-            <a href="{{ url_for('product.add_product') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
-                Pridėti naują prekę
-            </a>
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold my-6">Visos Prekės</h1>
+    
+    <!-- Rikiavimo nuorodos -->
+    <div class="mb-4">
+        <span class="font-semibold">Rikiuoti pagal:</span>
+        <a href="{{ url_for('home.products', sort_by='price_asc') }}" class="text-green-600 hover:underline px-2">Kainą (didėjančiai)</a>
+        <a href="{{ url_for('home.products', sort_by='price_desc') }}" class="text-green-600 hover:underline px-2">Kainą (mažėjančiai)</a>
+        <a href="{{ url_for('home.products', sort_by='name') }}" class="text-green-600 hover:underline px-2">Pavadinimą</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="font-bold text-xl mb-2">{{ product.name }}</h2>
+                <p class="text-gray-700 text-base mb-4">
+                    {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
+                </p>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(product.price) }} €</span>
+                    <!-- <span class="text-yellow-500 font-bold">★ 0 / 5</span> -->
+                     <!-- product.average_rating - vietoj nulio atsiliepimu veliau -->
+                </div>
+                <!-- <a href="#" class="w-full text-center block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Plačiau</a> -->
+                 <!-- url_for('main.product_detail', product_id=product.id) idesim veliau vietoj # -->
+                {% if current_user.is_authenticated %}
+                    {% if current_user.user_role != 1 %}
+                    <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST" class="mt-2">
+                        <button type="submit" class="w-full text-center block bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600 transition duration-300">
+                            Į Krepšelį
+                        </button>
+                    </form>
+                    {% endif%}
+                {% endif %}
+            </div>
         </div>
-        <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-6">
-            <table class="w-full text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th scope="col" class="py-3 px-6">ID</th>
-                        <th scope="col" class="py-3 px-6">Pavadinimas</th>
-                        <th scope="col" class="py-3 px-6">Aprašymas</th>
-                        <th scope="col" class="py-3 px-6">Kaina</th>
-                        <th scope="col" class="py-3 px-6">Kiekis</th>
-                        <th scope="col" class="py-3 px-6">Būsena</th>
-                        <th scope="col" class="py-3 px-6">Veiksmai</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                    <tr class="bg-white border-b hover:bg-gray-50">
-                        <td class="py-4 px-6 font-medium text-gray-900">{{ product.id }}</td>
-                        <td class="py-4 px-6">{{ product.name }}</td>
-                        <td class="py-4 px-6">{{ product.description }}</td>
-                        <td class="py-4 px-6">{{ product.price }}</td>
-                        <td class="py-4 px-6">{{ product.stock }}</td>
-                        <td class="py-4 px-6">
-                            {% if product.is_active == 1 %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Pardavime
-                                </span>
-                            {% else %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Išimtas
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td class="py-4 px-6 flex items-center space-x-3">
-                            <a href="{{ url_for('product.edit_product', product_id=product.id) }}" class="font-medium text-blue-600 hover:underline">Redaguoti</a>
-                            <form action="{{ url_for('product.delete_product', product_id=product.id) }}" method="POST" onsubmit="return confirm('Ar tikrai norite ištrinti šį vartotoją?');">
-                                <button type="submit" class="font-medium text-red-600 hover:underline">Ištrinti</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4">Vartotojų nerasta.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {% else %}
+        <p>Šiuo metu prekių nėra.</p>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

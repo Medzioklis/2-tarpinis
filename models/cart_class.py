@@ -8,5 +8,5 @@ class Cart(db.Model):
     quantity = db.Column(db.Integer, default=1)
 
     # Ryšiai su User ir Product modeliais
-    user = db.relationship('User', back_populates='cart')
-    product = db.relationship('Product', back_populates='cart')
+    user = db.relationship('User', back_populates='cart_items')
+    product = db.relationship('Product', back_populates='cart_items')
