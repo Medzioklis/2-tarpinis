@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user
 from werkzeug.security import generate_password_hash
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from database import db, login_manager
 from datetime import datetime, timedelta
 from models.user_class import User
@@ -57,7 +57,11 @@ def user_login():
             return redirect(url_for('user.dashboard'))
 
     if form.validate_on_submit():
-        stmt = select(User).where(User.user_email == form.email.data)
+        stmt = select(User).where(
+            and_(
+            User.user_email == form.email.data,
+            User.deleted == False)
+        )
         user = db.session.execute(stmt).scalar_one_or_none()
 
         now = datetime.now()
