@@ -9,6 +9,9 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     is_active = db.Column(db.Boolean, default=True, nullable=False) # Išėmimui iš prekybos
 
+    # Produktas gali būti daugelyje krepšelio įrašų
+    cart_items = db.relationship('Cart', back_populates='product')
+
 
     def __repr__(self):
         return f'<Product {self.name}>'

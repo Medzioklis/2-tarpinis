@@ -1,5 +1,5 @@
 from database import db
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from flask_login import UserMixin
 
 
@@ -12,9 +12,12 @@ class User(db.Model, UserMixin):
     user_password = db.Column(db.String(255), nullable=False)
     user_role = db.Column(db.Integer, default=2)
     user_balance = db.Column(db.Float, default=0.0)
+    
+    # Vartotojas turi daug krepšelio prekių (Cart įrašų)
+    cart_items = db.relationship('Cart', back_populates='user')
 
-
-    login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user', cascade="all, delete-orphan")
+    # uselist=False, nes vartotojas turi tik vieną prisijungimo saugumą (vienas su vienu ryšys)
+    login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
 
 
     def check_password(self, password):
