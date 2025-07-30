@@ -10,7 +10,7 @@ product_bp = Blueprint('product', __name__, template_folder='templates')
 @product_bp.route('/products')
 def list_products():
     products = view_products()
-    return render_template('store/products.html', products=products)
+    return render_template('admin/products.html', products=products)
 
 # Funkcija skirta pridėti prekę
 @product_bp.route('/products/add', methods=['GET', 'POST'])
@@ -29,7 +29,7 @@ def add_product():
         db.session.commit()
         flash('Prekė sėkmingai pridėta.', 'success')
         return redirect(url_for('product.list_products'))
-    return render_template('store/add_product.html', form=form)
+    return render_template('admin/add_product.html', form=form)
 
 #  Funkcija, kuri leidžia redaguoti prekę
 
@@ -57,7 +57,7 @@ def edit_product(product_id):
         flash('Prekė atnaujinta.', 'success')
         return redirect(url_for('product.list_products'))
 
-    return render_template('store/update_product.html', form=form, product=product, title="Redaguoti prekę")
+    return render_template('admin/update_product.html', form=form, product=product, title="Redaguoti prekę")
 
 # Funkcija leidžianti ištrinti prekę
 @product_bp.route('/products/delete/<int:product_id>', methods=['POST'])
