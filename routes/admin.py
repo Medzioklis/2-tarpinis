@@ -15,8 +15,8 @@ def dashboard():
     admin_required()
     try:
         stats = {
-            'user_count': db.session.scalar(select(func.count(User.id)))
-            # 'product_count': product_service.Product.query.count(),
+            'user_count': db.session.scalar(select(func.count(User.id)).where(User.deleted == False)),
+            'product_count': db.session.scalar(select(func.count(Product.id)).where(Product.deleted == False))
             # 'total_sales': db.session.query(db.func.sum(Order.total_price)).scalar() or 0
         }
         return render_template('admin/dashboard.html', title='Admin Panelė', stats=stats)
