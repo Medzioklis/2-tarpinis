@@ -1,10 +1,11 @@
 from werkzeug.security import generate_password_hash
 from models.user_class import User, db
 from sqlalchemy import select
+from flask_login import current_user
 
 def get_all_users():
     """Gražina visų vartotojų sąrašą."""
-    return db.session.execute(select(User)).scalars().all()
+    return db.session.scalars(select(User).where(User.deleted == False)).all()
 
 def get_user_by_id(user_id):
     """Gražina vartotoją pagal ID."""
@@ -17,7 +18,8 @@ def add_new_user(form):
         user_lastname=form.user_lastname.data,
         user_email=form.user_email.data,
         user_role=int(form.user_role.data),
-        user_password=generate_password_hash(form.password.data)
+        user_password=generate_password_hash(form.password.data),
+        createdBy=current_user.user_name
     )
     db.session.add(new_user)
     db.session.commit()
@@ -28,6 +30,7 @@ def update_existing_user(user, form):
     user.user_lastname = form.user_lastname.data
     user.user_email = form.user_email.data
     user.user_role = int(form.user_role.data)
+    user.modifiedBy = current_user.user_name
     db.session.commit()
 
 def delete_user_by_id(user_id):
@@ -36,7 +39,7 @@ def delete_user_by_id(user_id):
     if user:
         if user.user_role == 1: # Apsauga, kad nebūtų galima ištrinti admino
             return False, "Negalima ištrinti administratoriaus."
-        db.session.delete(user)
+        user.deleted = True
         db.session.commit()
         return True, f"Vartotojas '{user.user_name}' sėkmingai ištrintas."
     return False, "Vartotojas nerastas."
