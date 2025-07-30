@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from forms.user_crud_form import AddUserForm, UpdateUserForm, db # Pakeiskite 'your_app'
+from forms.user_crud_form import AddUserForm, UpdateUserForm, db 
 from services import admin_services # Importuojame servisus
 from services.auth_functions import admin_required
 from sqlalchemy import select, func
 from models.user_class import User
+from models.product_class import Product
 
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -14,8 +15,8 @@ def dashboard():
     admin_required()
     try:
         stats = {
-            'user_count': db.session.scalar(select(func.count(User.id)))
-            # 'product_count': product_service.Product.query.count(),
+            'user_count': db.session.scalar(select(func.count(User.id)).where(User.deleted == False)),
+            'product_count': db.session.scalar(select(func.count(Product.id)).where(Product.deleted == False))
             # 'total_sales': db.session.query(db.func.sum(Order.total_price)).scalar() or 0
         }
         return render_template('admin/dashboard.html', title='Admin Panelė', stats=stats)
