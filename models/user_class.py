@@ -16,8 +16,9 @@ class User(db.Model, UserMixin):
     # Vartotojas turi daug krepšelio prekių (Cart įrašų)
     cart_items = db.relationship('Cart', back_populates='user')
 
-    # uselist=False, nes vartotojas turi tik vieną prisijungimo saugumą (vienas su vienu ryšys)
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
+    reviews = db.relationship("Review", backref="author")
+
 
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
     orders = db.relationship('Order', backref='customer')

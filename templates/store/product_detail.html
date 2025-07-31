@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from 'includes/_formhelpers.html' import render_field %}
+
+{% block content %}
+<div class="container mx-auto">
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-4xl font-bold mb-2">{{ product.name }}</h1>
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-3xl font-bold text-green-600">{{ "%.2f"|format(product.price) }} €</p>
+            <p class="text-2xl text-yellow-500 font-bold">★ {{ product.average_rating }} / 5</p>
+        </div>
+        <p class="text-gray-700 mb-4">{{ product.description }}</p>
+        <p class="text-gray-600 mb-6">Likutis: {{ product.stock }} vnt.</p>
+
+        {% if current_user.user_role == 2%}
+            <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST">
+                <button type="submit" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300">
+                    Įdėti į krepšelį
+                </button>
+            </form>
+        {% else %}
+            <p><a href="{{ url_for('auth.login') }}" class="text-blue-500 hover:underline">Prisijunkite</a>, kad galėtumėte pirkti.</p>
+        {% endif %}
+    </div>
+
+    <!-- Atsiliepimai -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold mb-4">Atsiliepimai</h2>
+        
+        <!-- Palikti atsiliepimą forma -->
+        {% if current_user.user_role == 2 %}
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h3 class="text-xl font-semibold mb-3">Palikite savo atsiliepimą</h3>
+            <form method="POST" action="{{ url_for('home.product_detail', product_id=product.id) }}">
+                {{ form.hidden_tag() }}
+                {{ render_field(form.rating, class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none") }}
+                {{ render_field(form.text, class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none", rows="4") }}
+                {{ form.submit(class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300") }}
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Esami atsiliepimai -->
+        {% for review in product.reviews %}
+        <div class="bg-white p-4 rounded-lg shadow mb-4">
+            <div class="flex justify-between items-center">
+                <p class="font-bold">{{ review.author.username }}</p>
+                <p class="text-yellow-500 font-bold">★ {{ review.rating }} / 5</p>
+            </div>
+            <p class="text-gray-600 text-sm mb-2">{{ review.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="text-gray-800">{{ review.text }}</p>
+        </div>
+        {% else %}
+        <p>Atsiliepimų apie šią prekę dar nėra.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
