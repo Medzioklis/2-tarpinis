@@ -9,6 +9,15 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     is_active = db.Column(db.Boolean, default=True, nullable=False) # Išėmimui iš prekybos
 
+    reviews = db.relationship("Review", back_populates="product")
 
+    @property
+    def average_rating(self):
+        if not self.reviews:
+            return 0
+        total = sum(review.rating for review in self.reviews)
+        return round(total / len(self.reviews), 1)
+    
+    
     def __repr__(self):
         return f'<Product {self.name}>'

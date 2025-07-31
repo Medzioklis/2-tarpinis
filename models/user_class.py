@@ -1,5 +1,5 @@
 from database import db
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from flask_login import UserMixin
 
 
@@ -14,7 +14,9 @@ class User(db.Model, UserMixin):
     user_balance = db.Column(db.Float, default=0.0)
 
 
-    login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user', cascade="all, delete-orphan")
+    login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
+    reviews = db.relationship("Review", backref="author")
+
 
 
     def check_password(self, password):
