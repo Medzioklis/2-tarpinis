@@ -95,4 +95,21 @@ def create_order_from_cart(user_id):
     except Exception as e:
         db.session.rollback()
         raise e
- 
+# Krepšelyje atnaujiname kiekį
+
+def update_cart_item_quantity(user_id, product_id, quantity): 
+    stmt = select(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id)# Sukuriame SELECT užklausą, ieškančią konkretų naudotojo ir produkto įrašą krepšelyje
+    result = db.session.execute(stmt).scalar_one_or_none() # Vykdome užklausą ir gauname rezultatą (arba None, jei nerasta
+    if result is None:# Jei prekė krepšelyje nerasta – grąžiname klaidą
+        raise ValueError("Prekė krepšelyje nerasta.")
+    result.quantity = quantity # Priskiriame naują kiekį rastam įrašui
+    db.session.commit()
+
+# Pašaliname prekę iš krepšelio
+def remove_item_from_cart(user_id, product_id):
+    stmt = select(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id) # Sukuriame SELECT užklausą, ieškančią konkrečios prekės krepšelyje
+    result = db.session.execute(stmt).scalar_one_or_none()  # Vykdome užklausą ir gauname rezultatą (arba None, jei nerasta)
+    if result is not None:  # Jei radome – pašaliname įrašą iš duomenų bazės
+        db.session.delete(result)
+        db.session.commit()
+

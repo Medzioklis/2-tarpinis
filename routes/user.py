@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from services.user_functions import top_up_balance
 from services.order_services import get_cart_contents, add_product_to_cart, create_order_from_cart
 from services.product_services import get_product_by_id
+from services.order_services import update_cart_item_quantity, remove_item_from_cart
 
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
@@ -61,5 +62,32 @@ def buy_cart():
     except Exception as e:
         flash(f'Įvyko nenumatyta pirkimo klaida: {e}', 'danger')
         return redirect(url_for('user.cart'))
+    
+@user_bp.route('/cart/update/<int:product_id>', methods=['POST'])
+@login_required
+def update_quantity(product_id):
+    try:
+        quantity = int(request.form.get('quantity'))
+        if quantity < 1:
+            flash("Kiekis turi būti bent 1.", "warning")
+        else:
+            update_cart_item_quantity(current_user.id, product_id, quantity)
+            flash("Prekės kiekis atnaujintas.", "success")
+    except ValueError as e:
+        flash(str(e), "danger")
+    except Exception as e:
+        flash(f"Klaida atnaujinant kiekį: {e}", "danger")
+    return redirect(url_for('user.cart'))
+
+@user_bp.route('/cart/remove/<int:product_id>', methods=['POST'])
+@login_required
+def remove_item(product_id):
+    try:
+        remove_item_from_cart(current_user.id, product_id)
+        flash("Prekė pašalinta iš krepšelio.", "info")
+    except Exception as e:
+        flash(f"Klaida šalinant prekę: {e}", "danger")
+    return redirect(url_for('user.cart'))
+
 
 
