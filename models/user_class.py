@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
     cart_items = db.relationship('Cart', back_populates='user')
 
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
-    reviews = db.relationship("Review", backref="author")
+    reviews = db.relationship("Review", back_populates="user", lazy='dynamic')
 
 
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer

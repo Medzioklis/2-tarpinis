@@ -7,7 +7,7 @@ home_bp = Blueprint('home', __name__)
 
 @home_bp.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('home.products'))
 
 @home_bp.route('/product/<product_id>', methods = ['GET','POST'])
 def product_detail(product_id):
