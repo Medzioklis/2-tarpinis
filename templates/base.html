@@ -32,7 +32,9 @@
                     </div>
                     <!-- Pagrindinės navigacijos nuorodos -->
                     <div class="hidden md:flex items-center space-x-1">
-                        <a href="{{ url_for('home.index') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Pagrindinis</a>
+                    {% if current_user.user_role == 2 %}
+                        <a href="{{ url_for('user.dashboard') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Vartotojo profilis</a>
+                    {% endif %}
                         <a href="{{ url_for('home.products') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Prekės</a>
                     </div>
                 </div>

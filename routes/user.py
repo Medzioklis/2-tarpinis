@@ -18,6 +18,7 @@ def dashboard():
     return render_template('user/dashboard.html', user=current_user)
 
 
+
 @user_bp.route('/add_balance', methods = ['GET','POST'])
 @login_required
 def add_balance():
