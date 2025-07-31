@@ -33,6 +33,7 @@
                     <!-- Pagrindinės navigacijos nuorodos -->
                     <div class="hidden md:flex items-center space-x-1">
                         <a href="{{ url_for('home.index') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Pagrindinis</a>
+                        <a href="{{ url_for('home.products') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Prekės</a>
                     </div>
                 </div>
                 <!-- Antrinės navigacijos nuorodos (dešinėje) -->
@@ -44,7 +45,7 @@
                         {% if current_user.user_role == 2 %}
                             <h3>Jūsų balansas: {{ current_user.user_balance }} €</h3>
                             <a href="{{ url_for('user.add_balance') }}" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Papildyti balansą</a>
-                            <a href="user/cart.html" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Krepšelis</a>
+                            <a href="{{ url_for('user.cart') }}" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Krepšelis</a>
                         {% endif %}
         
                     

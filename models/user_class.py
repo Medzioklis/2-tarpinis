@@ -12,7 +12,9 @@ class User(db.Model, UserMixin):
     user_password = db.Column(db.String(255), nullable=False)
     user_role = db.Column(db.Integer, default=2)
     user_balance = db.Column(db.Float, default=0.0)
-
+    
+    # Vartotojas turi daug krepšelio prekių (Cart įrašų)
+    cart_items = db.relationship('Cart', back_populates='user')
 
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
     reviews = db.relationship("Review", backref="author")
