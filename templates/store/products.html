@@ -22,11 +22,9 @@
                 </p>
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(product.price) }} €</span>
-                    <!-- <span class="text-yellow-500 font-bold">★ 0 / 5</span> -->
-                     <!-- product.average_rating - vietoj nulio atsiliepimu veliau -->
+                    <span class="text-yellow-500 font-bold">★ {{product.average_rating}} / 5</span>
                 </div>
-                <!-- <a href="#" class="w-full text-center block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Plačiau</a> -->
-                 <!-- url_for('home.product_detail', product_id=product.id) idesim veliau vietoj # -->
+                <a href="{{url_for('home.product_detail', product_id=product.id)}}" class="w-full text-center block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Plačiau</a>
                 {% if current_user.is_authenticated %}
                     {% if current_user.user_role != 1 %}
                     <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST" class="mt-2">

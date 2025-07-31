@@ -1,11 +1,11 @@
 from database import db
-import datetime
+from sqlalchemy import func #laikas dabar
 
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=func.now())
     total_price = db.Column(db.Float, nullable=False)
     
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer

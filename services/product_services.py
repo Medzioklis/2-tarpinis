@@ -37,7 +37,7 @@ def get_all_products(sort_by='price_asc'):
         else: # Default: price_asc
             rows = rows.order_by(asc(Product.price))
 
-        products = db.session.scalars(rows).all
+        products = db.session.scalars(rows).all()
         return products
     except Exception as e:
         # Reikėtų loginti klaidą

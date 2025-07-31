@@ -1,7 +1,7 @@
 from models.product_class import Product, db
 from models.user_class import User
 from models.cart_class import Cart
-from models.oder_class import Order, OrderItem
+from models.order_class import Order, OrderItem
 from sqlalchemy import select, update
 
 # gauname vartotojo krepšelio turinį

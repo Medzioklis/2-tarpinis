@@ -13,7 +13,7 @@ app.secret_key = 'futbolas'
 
 # Set Databse patch and data
 # app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///parduotuve.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ugne:Labasrytas2025!@35.242.231.50:3306/football' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://marius:Labasrytas2025!@35.242.231.50:3306/football' 
 
 class Base(DeclarativeBase):
     createdBy = Column(String(50), nullable=False, default='System')

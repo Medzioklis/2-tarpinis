@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 from services.user_functions import top_up_balance
-from services.order_services import get_cart_contents, add_product_to_cart
+from services.order_services import get_cart_contents, add_product_to_cart, create_order_from_cart
 from services.product_services import get_product_by_id
 
 
@@ -47,5 +47,19 @@ def add_to_cart(product_id):
     else:
         flash(f'Atsiprašome, prekės "{product.name}" laikinai neturime.', 'warning')
     return redirect(url_for('home.products'))
+
+@user_bp.route('/buy_cart', methods=['POST'])
+@login_required
+def buy_cart():
+    try:
+        order = create_order_from_cart(current_user.id)
+        flash(f'Ačiū, kad pirkote! Jūsų užsakymo Nr. {order.id}.', 'success')
+        return redirect(url_for('home.index'))
+    except ValueError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('user.cart'))
+    except Exception as e:
+        flash(f'Įvyko nenumatyta pirkimo klaida: {e}', 'danger')
+        return redirect(url_for('user.cart'))
 
 

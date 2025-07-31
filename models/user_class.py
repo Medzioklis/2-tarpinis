@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
 
 
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
-    orders = db.relationship('Order', backref='customer')
+    orders = db.relationship('Order', backref='user', lazy='dynamic')
 
 
     def check_password(self, password):

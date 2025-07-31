@@ -9,10 +9,12 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     is_active = db.Column(db.Boolean, default=True, nullable=False) # Išėmimui iš prekybos
 
-    reviews = db.relationship("Review", backref='product')
+    reviews = db.relationship("Review", back_populates='product')
 
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
     order_items = db.relationship('OrderItem', backref="product")
+
+    cart_items = db.relationship('Cart', back_populates='product')
 
     @property
     def average_rating(self):
