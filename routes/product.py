@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash 
 from forms.user_crud_form import  db 
 from forms.product_form import AddProductForm, UpdateProductForm
 from models.product_class import Product
+from flask_login import login_required, current_user
 from services.product_services import view_products
-from services.auth_functions import admin_required
+from models.review_class import Review
+from forms.review_form import ReviewForm
+from sqlalchemy import select
 
 product_bp = Blueprint('product', __name__, template_folder='templates')
 
@@ -71,3 +74,42 @@ def delete_product(product_id):
         db.session.commit()
         flash('Prekė pašalinta iš prekybos.', 'warning')
     return redirect(url_for('product.list_products'))
+
+#  Atsiliepimų peržiūra
+@product_bp.route('/product/<int:product_id>/review')
+def product_review(product_id):
+    stmt = select(Product).where(Product.id == product_id)
+    product = db.session.execute(stmt).scalar_one_or_none()
+
+    if not product:
+        flash('Prekė nerasta', 'warning')
+        return redirect(url_for('product.list_products')) 
+
+    return render_template('product_review.html', product=product)
+
+
+# Pridėti prekės įvertinimą
+@product_bp.route('/products/<int:product_id>/review', methods=['GET', 'POST'])
+@login_required
+def leave_review(product_id):
+    product = db.session.get(Product, product_id)
+    if not product:
+        flash("Prekė nerasta", "danger")
+        return redirect(url_for('product.list_products'))
+
+    form = ReviewForm()
+    if form.validate_on_submit():
+        review = Review(
+            rating=form.rating.data,
+            comment=form.comment.data,
+            user_id=current_user.id,
+            product_id=product.id
+        )
+        db.session.add(review)
+        db.session.commit()
+        flash("Atsiliepimas pateiktas!", "success")
+        return redirect(url_for('product.product_review', product_id=product.id))
+
+    return render_template('products/leave_review.html', form=form, product=product)
+
+
