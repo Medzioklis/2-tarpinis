@@ -1,6 +1,8 @@
 from models.product_class import Product, db
+from models.user_class import User
 from models.cart_class import Cart
-from sqlalchemy import select
+from models.oder_class import Order, OrderItem
+from sqlalchemy import select, update
 
 # gauname vartotojo krepšelio turinį
 def get_cart_contents(user_id):
@@ -41,3 +43,56 @@ def add_product_to_cart(user_id, product_id, quantity=1):
     except Exception as e:
         db.session.rollback()
         raise e
+
+# Iš krepšelio turinio sukuriam uzsakyma    
+def create_order_from_cart(user_id):
+    
+    # tikrinam ar krepselio deleted nera True
+    cart = db.session.scalars(db.select(Cart).where(Cart.user_id == user_id, Cart.deleted == True )).first()
+    if cart:
+        raise ValueError("Krepšelis ištrintas")
+
+    user = db.session.get(User, user_id)
+    cart_items_list, total_price = get_cart_contents(user_id)
+
+    if not cart_items_list:
+        raise ValueError("Krepšelis tuščias.")
+    if user.user_balance < total_price:
+        raise ValueError("Nepakanka lėšų balanse.")
+
+    try:
+        # Nuskaičiuojame pinigus iš vartotojo balanso
+        user.user_balance -= total_price
+        
+        # Sukuriame užsakymą
+        order = Order(user_id=user_id, total_price=total_price)
+        db.session.add(order)
+        
+        # Perkeliame prekes iš krepšelio į užsakymo prekes
+        for item in cart_items_list:
+            product = item['product']
+            quantity = item['quantity']
+            
+            # Patikriname likutį
+            if product.stock < quantity:
+                raise ValueError(f"Nepakankamas prekės '{product.name}' likutis.")
+            
+            product.stock -= quantity
+            
+            order_item = OrderItem(
+                order=order, 
+                product_id=product.id, 
+                quantity=quantity, 
+                price_per_unit=product.price
+            )
+            db.session.add(order_item)
+
+        # Išvalome krepšelį (pakeiciam deleted True)
+        row = (update(Cart).where(Cart.user_id == user_id).values(deleted=True))
+        db.session.execute(row)
+        db.session.commit()
+        return order
+    except Exception as e:
+        db.session.rollback()
+        raise e
+ 

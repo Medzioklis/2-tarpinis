@@ -10,7 +10,10 @@ class Product(db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False) # Išėmimui iš prekybos
 
     # Produktas gali būti daugelyje krepšelio įrašų
-    cart_items = db.relationship('Cart', back_populates='product')
+    cart_items = db.relationship('Cart', backref='product')
+
+    # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
+    order_items = db.relationship('OrderItem', backref='product')
 
 
     def __repr__(self):

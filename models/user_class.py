@@ -19,6 +19,9 @@ class User(db.Model, UserMixin):
     # uselist=False, nes vartotojas turi tik vieną prisijungimo saugumą (vienas su vienu ryšys)
     login_security = db.relationship('LoginSecurity', uselist=False, back_populates='user')
 
+    # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
+    orders = db.relationship('Order', backref='customer')
+
 
     def check_password(self, password):
         return check_password_hash(self.user_password, password)
