@@ -11,7 +11,7 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
     text = db.Column(db.Text, nullable=True)
-    timestamp = db.Column(db.DateTime, index=True, default=func.now())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.now())
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, ForeignKey('products.id'), nullable=False)
     

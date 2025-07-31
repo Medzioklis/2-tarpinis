@@ -10,10 +10,10 @@ from sqlalchemy import select
 
 product_bp = Blueprint('product', __name__, template_folder='templates')
 
-@product_bp.route('/products')
+@product_bp.route('/admin_products')
 def list_products():
     products = view_products()
-    return render_template('admin/products.html', products=products)
+    return render_template('admin/admin_products.html', products=products)
 
 # Funkcija skirta pridėti prekę
 @product_bp.route('/products/add', methods=['GET', 'POST'])
