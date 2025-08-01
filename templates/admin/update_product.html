@@ -6,9 +6,9 @@
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Atnaujinti prekę {{ product.name }}
         </h2>
-        <form class="mt-8 space-y-6" method="POST" action="{{ url_for('product.edit_product', product_id=product.id) }}">
+        <form class="mt-8 space-y-6" method="POST" enctype="multipart/form-data" action="{{ url_for('product.edit_product', product_id=product.id) }}">
             {{ form.hidden_tag() }}
-            
+
             <!-- Pavadinimas -->
             <div>
                 {{ form.name.label(class="block text-sm font-medium text-gray-700") }}
@@ -22,7 +22,7 @@
             <div>
                 {{ form.description.label(class="block text-sm font-medium text-gray-700") }}
                 {{ form.description(class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm") }}
-                 {% for error in form.description.errors %}
+                {% for error in form.description.errors %}
                     <span class="text-red-500 text-xs">{{ error }}</span>
                 {% endfor %}
             </div>
@@ -31,28 +31,39 @@
             <div>
                 {{ form.price.label(class="block text-sm font-medium text-gray-700") }}
                 {{ form.price(class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm") }}
-                 {% for error in form.price.errors %}
+                {% for error in form.price.errors %}
                     <span class="text-red-500 text-xs">{{ error }}</span>
                 {% endfor %}
             </div>
 
             <!-- Kiekis -->
-             <div>
+            <div>
                 {{ form.stock.label(class="block text-sm font-medium text-gray-700") }}
                 {{ form.stock(class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm") }}
-                 {% for error in form.stock.errors %}
+                {% for error in form.stock.errors %}
                     <span class="text-red-500 text-xs">{{ error }}</span>
                 {% endfor %}
             </div>
 
-             <!-- Busena -->
-             <div>
+            <!-- Būsena -->
+            <div>
                 {{ form.is_active.label(class="block text-sm font-medium text-gray-700") }}
                 {{ form.is_active(class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm") }}
-                 {% for error in form.is_active.errors %}
+                {% for error in form.is_active.errors %}
                     <span class="text-red-500 text-xs">{{ error }}</span>
                 {% endfor %}
             </div>
+
+            <!-- Nuotrauka -->
+            <div>
+                {{ form.image.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.image(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100") }}
+                {% for error in form.image.errors %}
+                    <span class="text-red-500 text-xs">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- Mygtukas -->
             <div>
                 {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer") }}
             </div>

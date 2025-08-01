@@ -8,6 +8,7 @@ from routes.product import product_bp
 
 
 
+
 app.register_blueprint(home_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)

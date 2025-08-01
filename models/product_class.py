@@ -9,6 +9,8 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False, default=0)
     is_active = db.Column(db.Boolean, default=True, nullable=False) # Išėmimui iš prekybos
 
+    image_filename = db.Column(db.String(255), nullable=True)
+
     reviews = db.relationship("Review", back_populates='product')
 
     # backref yra SQLAlchemy magija kuria jis pats atmintyje sukuria Order modelyje customer, skiriasi nuo back_populates tuo kad nebutina kode apsirasyt customer
