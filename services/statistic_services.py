@@ -24,10 +24,6 @@ def get_best_rated_products():
     
     best_rated_products = db.session.execute(best_rated_query).all()
     return best_rated_products
-    # # Pavyzdinis atvaizdavimas konsolėje
-    # print("\n--- Geriausiai įvertintos prekės ---")
-    # for pavadinimas, vidurkis, kiekis in best_rated_products:
-    #     print(f'Prekė: "{pavadinimas}", Įvertinimas: {vidurkis:.1f}/5 ({kiekis} atsiliepimų)')
         
 # Menesiu statistika
 def get_monthly_profits():

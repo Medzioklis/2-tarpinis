@@ -113,6 +113,56 @@
         </table>
     </div>
 </div>
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">TOP 10 geriausiai įvertintų prekių</h1>
+    
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full leading-normal">
+            <thead>
+                <tr>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Prekės pavadinimas
+                    </th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Vidutinis įvertinimas
+                    </th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Atsiliepimų skaičius
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Ciklas per kiekvieną prekę 'products' sąraše #}
+                {% for product in products %}
+                <tr>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        {# Prieiname prie duomenų pagal stulpelio pavadinimą arba .label() #}
+                        <p class="text-gray-900 whitespace-no-wrap font-semibold">{{ product.name }}</p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap">
+                           {# Formatuojame, kad būtų vienas skaičius po kablelio #}
+                           ⭐ {{ "%.1f"|format(product.vidutinis_ivertinimas) }} / 5.0
+                        </p>
+                    </td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p class="text-gray-900 whitespace-no-wrap">
+                           {{ product.atsiliepimu_kiekis }}
+                        </p>
+                    </td>
+                </tr>
+                {# Jei sąrašas tuščias #}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="px-5 py-5 text-center text-gray-500">
+                        Atsiliepimų kol kas nėra.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
 
 
