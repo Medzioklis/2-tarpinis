@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = 'futbolas'
 
 # Kelias, kur saugosim įkeltus failus
-UPLOAD_FOLDER = 'static/image'
+UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
 # Set Databse patch and data
