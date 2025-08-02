@@ -1,27 +1,45 @@
 from sqlalchemy import func, select
-from .models import Order, OrderItem, Product, Review
+from models.product_class import Product
+from models.review_class import Review
+from models.order_class import Order
 from database import db
 
-
-#     Grąžina statistiką apie pardavimus kiekvienai dienai
-#     Rezultatas: sąrašas eilučių su (diena, parduotų prekių kiekis, dienos apyvarta)
-def get_daily_sales_stats():
-
-    daily_stats_query = (
+# Grąžina prekių sąrašą, surikiuotą pagal vidutinį įvertinimą
+# Rezultatas: sąrašas eilučių su (prekės pavadinimas, vidutinis įvertinimas, atsiliepimų kiekis)
+def get_best_rated_products():
+    best_rated_query = (
         select(
-            func.date(Order.timestamp).label('diena'),
-            func.sum(OrderItem.quantity).label('parduotu_prekiu_kiekis'),
-            func.sum(OrderItem.quantity * OrderItem.price_per_unit).label('dienos_apyvarta')
+            Product.name,
+            func.avg(Review.rating).label('vidutinis_ivertinimas'),
+            func.count(Review.id).label('atsiliepimu_kiekis')
         )
-        .join(Order, OrderItem.order_id == Order.id)
-        .group_by(func.date(Order.timestamp))
-        .order_by(func.date(Order.timestamp).desc())
+        .join(Review, Product.reviews)  # Galima naudoti ryšį tiesiogiai
+        .group_by(Product.id)
+        .order_by(
+            func.avg(Review.rating).desc(),
+            func.count(Review.id).desc()
+        )
+        .limit(10) # Pasirenkame pvz., Top 10 prekių
     )
     
-    daily_stats = db.session.execute(daily_stats_query).all()
-    
-    # Pavyzdinis atvaizdavimas konsolėje
-    for diena, kiekis, apyvarta in daily_stats:
-        print(f"Data: {diena}, Parduota vnt.: {kiekis}, Apyvarta: {apyvarta:.2f} €")
+    best_rated_products = db.session.execute(best_rated_query).all()
+    return best_rated_products
+    # # Pavyzdinis atvaizdavimas konsolėje
+    # print("\n--- Geriausiai įvertintos prekės ---")
+    # for pavadinimas, vidurkis, kiekis in best_rated_products:
+    #     print(f'Prekė: "{pavadinimas}", Įvertinimas: {vidurkis:.1f}/5 ({kiekis} atsiliepimų)')
         
-    return daily_stats
+# Menesiu statistika
+def get_monthly_profits():
+    monthly_profit_query = (
+        select(
+            func.extract('year', Order.timestamp).label('metai'),
+            func.extract('month', Order.timestamp).label('menuo'),
+            func.sum(Order.total_price).label('menesio_apyvarta')
+        )
+        .where(Order.deleted == False) 
+        .group_by('metai', 'menuo')
+        .order_by(func.sum(Order.total_price).desc())
+    )
+    monthly_profits = db.session.execute(monthly_profit_query).all()
+    return monthly_profits

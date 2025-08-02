@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request
 from sqlalchemy import func, select, extract
 from models.order_class import Order, OrderItem
 from models.product_class import Product
+from services.statistic_services import get_monthly_profits
 from database import db
 from datetime import datetime
 
@@ -57,27 +58,16 @@ def stats():
         except (ValueError, TypeError):
             title = "Neteisingas datos formatas. Pabandykite dar kartą."
     
+    monthly_profits_data = get_monthly_profits()
+    
     # Perduodame gautus parametrus atgal į šabloną, kad forma "atsimintų" pasirinkimus
     return render_template('statistic/stats.html', 
                            title=title, 
                            header_label=header_label, 
                            stats_data=stats_data,
                            selected_period=period,
-                           date_filter_value=date_filter_str)
+                           date_filter_value=date_filter_str,
+                           profits=monthly_profits_data)
 
 
-# Grąžinaм statistiką apie pelningiausius mėnesius
-def get_monthly_profitability():
-    monthly_profit_query = (
-        select(
-            func.extract('year', Order.timestamp).label('metai'),
-            func.extract('month', Order.timestamp).label('menuo'),
-            func.sum(Order.total_price).label('menesio_apyvarta')
-        )
-        .group_by('metai', 'menuo')
-        .order_by(func.sum(Order.total_price).desc())
-    )
-    
-    monthly_profits = db.session.execute(monthly_profit_query).all()
-    return render_template('statistic/stats.html', m_stats=monthly_profits)
         
