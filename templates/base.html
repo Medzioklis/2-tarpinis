@@ -45,6 +45,8 @@
                     {% if current_user.is_authenticated %}
                         {% if current_user.user_role == 1 %}
                             <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Admin Panelė</a>
+                            <a href="{{ url_for('statistic.stats') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Pardavimų statistika</a>
+
                         {% endif %}
                         {% if current_user.user_role == 2 %}
                             <h3>Jūsų balansas: {{ current_user.user_balance }} €</h3>
