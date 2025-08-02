@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from sqlalchemy import func, select, extract
 from models.order_class import Order, OrderItem
 from models.product_class import Product
-from services.statistic_services import get_monthly_profits
+from services.statistic_services import get_monthly_profits, get_best_rated_products
 from database import db
 from datetime import datetime
 
@@ -59,6 +59,8 @@ def stats():
             title = "Neteisingas datos formatas. Pabandykite dar kartą."
     
     monthly_profits_data = get_monthly_profits()
+
+    best_products = get_best_rated_products()
     
     # Perduodame gautus parametrus atgal į šabloną, kad forma "atsimintų" pasirinkimus
     return render_template('statistic/stats.html', 
@@ -67,7 +69,8 @@ def stats():
                            stats_data=stats_data,
                            selected_period=period,
                            date_filter_value=date_filter_str,
-                           profits=monthly_profits_data)
+                           profits=monthly_profits_data,
+                           products=best_products)
 
 
         
