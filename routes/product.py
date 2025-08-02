@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash 
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from forms.user_crud_form import  db 
 from forms.product_form import AddProductForm, UpdateProductForm
 from models.product_class import Product
@@ -6,7 +6,11 @@ from flask_login import login_required, current_user
 from services.product_services import view_products
 from models.review_class import Review
 from forms.review_form import ReviewForm
+from services.product_services import allowed_file
+from werkzeug.utils import secure_filename
 from sqlalchemy import select
+from database import app
+import os
 
 product_bp = Blueprint('product', __name__, template_folder='templates')
 
@@ -20,6 +24,14 @@ def list_products():
 def add_product():
     # Sukuriamas formos objektas
     form = AddProductForm()
+    if form.validate_on_submit():
+        file = form.image.data
+        filename = secure_filename(file.filename)
+        
+        # Sukuriamas pilnas kelias kur saugoti failą
+        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_path)
+
     # Tikrinama ar forma buvo pateikta (POST) ir ar duomenys joje yra galiojantys
     if form.validate_on_submit(): # Patikrina formą ir ar viskas suvesta tvarkingai
         product = Product(
@@ -27,6 +39,7 @@ def add_product():
             description=form.description.data,
             price=form.price.data,
             stock=form.stock.data
+            # image=form.image.data
             )
         db.session.add(product)
         db.session.commit()
@@ -56,6 +69,16 @@ def edit_product(product_id):
             product.is_active = True
         else:
             product.is_active = False
+
+        file = form.image.data  # jei naudoji Flask-WTF formą
+        if file:
+            filename = secure_filename(file.filename)
+            upload_path = os.path.join(app.root_path, 'static', 'image')
+            if not os.path.exists(upload_path):
+                os.makedirs(upload_path)  # jei katalogas neegzistuoja, sukuriam
+            file.save(os.path.join(upload_path, filename))
+            product.image_filename = filename
+
         db.session.commit()
         flash('Prekė atnaujinta.', 'success')
         return redirect(url_for('product.list_products'))
@@ -111,5 +134,29 @@ def leave_review(product_id):
         return redirect(url_for('product.product_review', product_id=product.id))
 
     return render_template('products/leave_review.html', form=form, product=product)
+
+@product_bp.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # Patikrinam ar yra failas formoje
+        if 'file' not in request.files:
+            flash('Nėra failo formoje')
+            return redirect(request.url)
+
+        file = request.files['file']
+
+        # Jei failo nepavadino
+        if file.filename == '':
+            flash('Nepasirinktas failas')
+            return redirect(request.url)
+
+        # Jei failas leidžiamas – išsaugom
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Failas įkeltas sėkmingai!')
+            return redirect(url_for('upload_file'))
+
+    return render_template('upload.html')
 
 

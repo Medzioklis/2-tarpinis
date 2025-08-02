@@ -17,8 +17,15 @@
                 </thead>
                 <tbody class="text-gray-700">
                     {% for item in cart_items %}
-                    <tr>
-                        <td class="text-left py-3 px-4">{{ item.product.name }}</td>
+                    <tr class="align-middle">
+                        <td class="text-left py-3 px-4 flex items-center space-x-4">
+                            {% if item.product.image_filename %}
+                                <img src="{{ url_for('static', filename='image/' ~ item.product.image_filename) }}" alt="{{ item.product.name }}" class="w-20 h-20 object-contain rounded border border-gray-300" />
+                            {% else %}
+                                <div class="w-20 h-20 flex items-center justify-center bg-gray-100 text-gray-400 rounded border border-gray-300 italic">Nėra</div>
+                            {% endif %}
+                            <span>{{ item.product.name }}</span>
+                        </td>
                         <td class="text-left py-3 px-4">{{ "%.2f"|format(item.product.price) }} €</td>
                         <td class="text-left py-3 px-4">
                             <form action="{{ url_for('user.update_quantity', product_id=item.product.id) }}" method="POST" class="flex items-center space-x-2">

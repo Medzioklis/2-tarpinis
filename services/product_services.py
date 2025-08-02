@@ -2,6 +2,7 @@ from models.review_class import Review, db
 from models.product_class import Product
 from flask import flash
 from sqlalchemy import select, desc, asc
+from database import ALLOWED_EXTENSIONS
 
 
 # Funkcija leidžianti peržiūrėti visas prekes
@@ -43,3 +44,7 @@ def get_all_products(sort_by='price_asc'):
         # Reikėtų loginti klaidą
         flash(f"Error getting all products: {e}")
         return []
+    
+# Tikrinam failo plėtinį
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

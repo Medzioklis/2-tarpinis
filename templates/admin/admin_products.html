@@ -19,6 +19,7 @@
                         <th scope="col" class="py-3 px-6">Kaina</th>
                         <th scope="col" class="py-3 px-6">Kiekis</th>
                         <th scope="col" class="py-3 px-6">Būsena</th>
+                        <th scope="col" class="py-3 px-6">Nuotrauka</th>  <!-- Naujas stulpelis -->
                         <th scope="col" class="py-3 px-6">Veiksmai</th>
                     </tr>
                 </thead>
@@ -41,6 +42,13 @@
                                 </span>
                             {% endif %}
                         </td>
+                        <td class="py-4 px-6">
+                            {% if product.image_filename %}
+                                <img src="{{ url_for('static', filename='image/' + product.image_filename) }}" alt="Prekės nuotrauka" class="h-12 w-12 object-cover rounded">
+                            {% else %}
+                                <span class="text-gray-400 italic">Nėra</span>
+                            {% endif %}
+                        </td>
                         <td class="py-4 px-6 flex items-center space-x-3">
                             <a href="{{ url_for('product.edit_product', product_id=product.id) }}" class="font-medium text-blue-600 hover:underline">Redaguoti</a>
                             <form action="{{ url_for('product.delete_product', product_id=product.id) }}" method="POST" onsubmit="return confirm('Ar tikrai norite ištrinti šį vartotoją?');">
@@ -50,7 +58,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="text-center py-4">Vartotojų nerasta.</td>
+                        <td colspan="8" class="text-center py-4">Prekių nerasta.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

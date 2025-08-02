@@ -15,6 +15,14 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {% for product in products %}
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Nuotrauka -->
+            {% if product.image_filename %}
+                <img src="{{ url_for('static', filename='image/' ~ product.image_filename) }}" alt="{{ product.name }}" class="w-full h-48 object-contain">
+            {% else %}
+                <div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 italic">
+                    Nuotrauka nėra
+                </div>
+            {% endif %}
             <div class="p-6">
                 <h2 class="font-bold text-xl mb-2">{{ product.name }}</h2>
                 <p class="text-gray-700 text-base mb-4">
@@ -22,9 +30,9 @@
                 </p>
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-2xl font-bold text-gray-900">{{ "%.2f"|format(product.price) }} €</span>
-                    <span class="text-yellow-500 font-bold">★ {{product.average_rating}} / 5</span>
+                    <span class="text-yellow-500 font-bold">★ {{ product.average_rating }} / 5</span>
                 </div>
-                <a href="{{url_for('home.product_detail', product_id=product.id)}}" class="w-full text-center block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Plačiau</a>
+                <a href="{{ url_for('home.product_detail', product_id=product.id) }}" class="w-full text-center block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Plačiau</a>
                 {% if current_user.is_authenticated %}
                     {% if current_user.user_role != 1 %}
                     <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST" class="mt-2">
@@ -32,7 +40,7 @@
                             Į Krepšelį
                         </button>
                     </form>
-                    {% endif%}
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
