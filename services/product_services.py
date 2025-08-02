@@ -26,9 +26,9 @@ def add_review_to_product(product_id, user_id, rating, text):
     except Exception as e:
         db.session.rollback()
         raise e
-    
+
+# Gaunam visas aktyvias prekes, surikiuotas pagal nurodytą kriterijų   
 def get_all_products(sort_by='price_asc'):
-    """ Gauna visas aktyvias prekes, surikiuotas pagal nurodytą kriterijų. """
     try:
         rows = select(Product).where(Product.is_active==True)
         if sort_by == 'price_desc':

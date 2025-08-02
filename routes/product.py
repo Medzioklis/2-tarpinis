@@ -48,7 +48,6 @@ def add_product():
     return render_template('admin/add_product.html', form=form)
 
 #  Funkcija, kuri leidžia redaguoti prekę
-
 @product_bp.route('/products/edit/<int:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
     # Bandoma gauti prekę iš duomenų bazės pagal ID
