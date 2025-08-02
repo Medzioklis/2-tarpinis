@@ -66,7 +66,7 @@ def buy_cart():
         flash(f'Įvyko nenumatyta pirkimo klaida: {e}', 'danger')
         return redirect(url_for('user.cart'))
     
-@user_bp.route('/cart/update/<int:product_id>', methods=['POST'])
+@user_bp.route('/cart/update/product_id>', methods=['POST'])
 @login_required
 def update_quantity(product_id):
     try:
@@ -82,7 +82,7 @@ def update_quantity(product_id):
         flash(f"Klaida atnaujinant kiekį: {e}", "danger")
     return redirect(url_for('user.cart'))
 
-@user_bp.route('/cart/remove/<int:product_id>', methods=['POST'])
+@user_bp.route('/cart/remove/<product_id>', methods=['POST'])
 @login_required
 def remove_item(product_id):
     try:
@@ -118,7 +118,7 @@ def buy_cart_success():
     db.session.commit()
 
     flash("Prekės sėkmingai įsigytos!", "success")
-    return render_template("purchase_success.html", user=current_user, items=cart_items)
+    return render_template("store/purchase_success.html", user=current_user, items=cart_items)
 
 
 

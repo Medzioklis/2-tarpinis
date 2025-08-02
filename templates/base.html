@@ -26,7 +26,11 @@
                 <div class="flex space-x-7">
                     <div>
                         <!-- Svetainės logotipas -->
-                        <span class="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">Sveiki, {{ current_user.user_name }} {{ current_user.user_lastname }}</span>
+                        {% if current_user.is_authenticated %}
+                            <span class="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">Sveiki, {{ current_user.user_name }} {{ current_user.user_lastname }}</span>
+                        {% else %}
+                            <span class="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">Futbolo prekių parduotuvė</span>
+                        {% endif %}
                     </div>
                     <!-- Pagrindinės navigacijos nuorodos -->
                     <div class="hidden md:flex items-center space-x-1">
