@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash
 from models.user_class import User, db
+from models.order_class import Order
 from sqlalchemy import select
 from flask_login import current_user
 
@@ -43,3 +44,9 @@ def delete_user_by_id(user_id):
         db.session.commit()
         return True, f"Vartotojas '{user.user_name}' sėkmingai ištrintas."
     return False, "Vartotojas nerastas."
+
+
+# Gaunam visus užsakymus
+def get_all_orders():
+    orders = db.session.scalars(select(Order).where(Order.deleted == False)).all()
+    return orders
