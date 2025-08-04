@@ -25,27 +25,31 @@ def add_product():
     # Sukuriamas formos objektas
     form = AddProductForm()
     if form.validate_on_submit():
-        file = form.image.data
-        filename = secure_filename(file.filename)
-        
-        # Sukuriamas pilnas kelias kur saugoti failą
-        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-        file.save(upload_path)
-
-    # Tikrinama ar forma buvo pateikta (POST) ir ar duomenys joje yra galiojantys
-    if form.validate_on_submit(): # Patikrina formą ir ar viskas suvesta tvarkingai
-        product = Product(
-            name=form.name.data,
-            description=form.description.data,
-            price=form.price.data,
-            stock=form.stock.data
-            # image=form.image.data
-            )
-        db.session.add(product)
-        db.session.commit()
-        flash('Prekė sėkmingai pridėta.', 'success')
-        return redirect(url_for('product.list_products'))
-    return render_template('admin/add_product.html', form=form)
+        try:
+            filename = None
+            file = form.image.data
+                       
+            # Sukuriamas pilnas kelias kur saugoti failą
+            if file:
+                filename = secure_filename(file.filename)
+                upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(upload_path)
+                # Sukuriamas produkto objektas
+                product = Product(
+                name=form.name.data,
+                description=form.description.data,
+                price=form.price.data,
+                stock=form.stock.data,
+                image_filename=filename
+                )
+            db.session.add(product)
+            db.session.commit()
+            flash('Prekė sėkmingai pridėta.', 'success')
+            return redirect(url_for('product.list_products'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Klaida pridedant prekę: {e}", "danger")
+        return render_template('admin/add_product.html', form=form)
 
 #  Funkcija, kuri leidžia redaguoti prekę
 @product_bp.route('/products/edit/<int:product_id>', methods=['GET', 'POST'])
@@ -58,29 +62,31 @@ def edit_product(product_id):
         return redirect(url_for('product.list_products'))
 
     form = UpdateProductForm(obj=product) # paima reiksmes kurios yra
-    # Tikrinama ar forma buvo pateikta ir ar visi laukai galiojantys (praėjo validaciją)
-    if form.validate_on_submit(): # Patikrina formą ir ar viskas suvesta tvarkingai
-        product.name = form.name.data
-        product.description = form.description.data
-        product.price = form.price.data
-        product.stock = form.stock.data
-        if form.is_active.data == '1':
-            product.is_active = True
-        else:
-            product.is_active = False
+    try:
+        # Tikrinama ar forma buvo pateikta ir ar visi laukai galiojantys (praėjo validaciją)
+        if form.validate_on_submit(): # Patikrina formą ir ar viskas suvesta tvarkingai
+            product.name = form.name.data
+            product.description = form.description.data
+            product.price = form.price.data
+            product.stock = form.stock.data
+            if form.is_active.data == '1':
+                product.is_active = True
+            else:
+                product.is_active = False
 
-        file = form.image.data  # jei naudoji Flask-WTF formą
-        if file:
-            filename = secure_filename(file.filename)
-            upload_path = os.path.join(app.root_path, 'static', 'image')
-            if not os.path.exists(upload_path):
-                os.makedirs(upload_path)  # jei katalogas neegzistuoja, sukuriam
-            file.save(os.path.join(upload_path, filename))
-            product.image_filename = filename
+            file = form.image.data
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(image_path)
+                product.image_filename = filename
 
-        db.session.commit()
-        flash('Prekė atnaujinta.', 'success')
-        return redirect(url_for('product.list_products'))
+            db.session.commit()
+            flash('Prekė atnaujinta.', 'success')
+            return redirect(url_for('product.list_products'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Klaida atnaujinant prekę: {e}", 'danger')
 
     return render_template('admin/update_product.html', form=form, product=product, title="Redaguoti prekę")
 
@@ -89,12 +95,16 @@ def edit_product(product_id):
 def delete_product(product_id):
     product = db.session.get(Product, product_id) # Bandoma gauti prekę iš duomenų bazės pagal ID
     # Tikrinama ar prekė neegzistuoja arba jau yra neaktyvi (t. y. ištrinta)
-    if not product: # Tikrinama ar prekė neegzistuoja arba jau yra neaktyvi (gal jau ištrinta)
-        flash('Prekė nerasta arba jau ištrinta.', 'warning')
-    else:
-        product.deleted = True # product lenetei deleted True
-        db.session.commit()
-        flash('Prekė pašalinta iš prekybos.', 'warning')
+    try:
+        if not product: # Tikrinama ar prekė neegzistuoja arba jau yra neaktyvi (gal jau ištrinta)
+            flash('Prekė nerasta arba jau ištrinta.', 'warning')
+        else:
+            product.deleted = True # product lenetei deleted True
+            db.session.commit()
+            flash('Prekė pašalinta iš prekybos.', 'warning')
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Klaida trinant prekę: {e}", "danger")
     return redirect(url_for('product.list_products'))
 
 #  Atsiliepimų peržiūra
@@ -121,16 +131,20 @@ def leave_review(product_id):
 
     form = ReviewForm()
     if form.validate_on_submit():
-        review = Review(
-            rating=form.rating.data,
-            comment=form.comment.data,
-            user_id=current_user.id,
-            product_id=product.id
-        )
-        db.session.add(review)
-        db.session.commit()
-        flash("Atsiliepimas pateiktas!", "success")
-        return redirect(url_for('product.product_review', product_id=product.id))
+        try:
+            review = Review(
+                rating=form.rating.data,
+                comment=form.comment.data,
+                user_id=current_user.id,
+                product_id=product.id
+            )
+            db.session.add(review)
+            db.session.commit()
+            flash("Atsiliepimas pateiktas!", "success")
+            return redirect(url_for('product.product_review', product_id=product.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Klaida siunčiant atsiliepimą: {e}", "danger")
 
     return render_template('products/leave_review.html', form=form, product=product)
 
@@ -151,10 +165,13 @@ def upload_file():
 
         # Jei failas leidžiamas – išsaugom
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('Failas įkeltas sėkmingai!')
-            return redirect(url_for('upload_file'))
+            try:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                flash('Failas įkeltas sėkmingai!')
+                return redirect(url_for('upload_file'))
+            except Exception as e:
+                flash(f"Klaida įkeliant failą: {e}", "danger")
 
     return render_template('upload.html')
 

@@ -20,7 +20,7 @@
                     <tr class="align-middle">
                         <td class="text-left py-3 px-4 flex items-center space-x-4">
                             {% if item.product.image_filename %}
-                                <img src="{{ url_for('static', filename='image/' ~ item.product.image_filename) }}" alt="{{ item.product.name }}" class="w-20 h-20 object-contain rounded border border-gray-300" />
+                                <img src="{{ url_for('static', filename='images/' ~ item.product.image_filename) }}" alt="{{ item.product.name }}" class="w-20 h-20 object-contain rounded border border-gray-300" />
                             {% else %}
                                 <div class="w-20 h-20 flex items-center justify-center bg-gray-100 text-gray-400 rounded border border-gray-300 italic">Nėra</div>
                             {% endif %}

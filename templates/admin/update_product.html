@@ -57,11 +57,20 @@
             <!-- Nuotrauka -->
             <div>
                 {{ form.image.label(class="block text-sm font-medium text-gray-700") }}
+
+                {% if product.image_filename %}
+                    <p class="mb-2 text-sm text-gray-600">Dabartinė nuotrauka:</p>
+                    <img src="{{ url_for('static', filename='images/' ~ product.image_filename) }}" alt="Prekės nuotrauka" class="w-32 h-32 object-contain rounded border border-gray-300 mb-4">
+                    <p class="text-sm text-gray-500 italic">Palikite šį laukelį tuščią, jei nenorite keisti nuotraukos.</p>
+                {% endif %}
+
                 {{ form.image(class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100") }}
+
                 {% for error in form.image.errors %}
                     <span class="text-red-500 text-xs">{{ error }}</span>
                 {% endfor %}
             </div>
+
 
             <!-- Mygtukas -->
             <div>
