@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold my-6">Pirkinių krepšelis</h1>
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+        {% if cart_items %}
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="w-2/5 text-left py-3 px-4 uppercase font-semibold text-sm">Prekė</th>
+                        <th class="w-1/5 text-left py-3 px-4 uppercase font-semibold text-sm">Kaina</th>
+                        <th class="w-1/5 text-left py-3 px-4 uppercase font-semibold text-sm">Kiekis</th>
+                        <th class="w-1/5 text-left py-3 px-4 uppercase font-semibold text-sm">Suma</th>
+                        <th class="w-1/5 text-left py-3 px-4 uppercase font-semibold text-sm">Veiksmai</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for item in cart_items %}
+                    <tr class="align-middle">
+                        <td class="text-left py-3 px-4 flex items-center space-x-4">
+                            {% if item.product.image_filename %}
+                                <img src="{{ url_for('static', filename='images/' ~ item.product.image_filename) }}" alt="{{ item.product.name }}" class="w-20 h-20 object-contain rounded border border-gray-300" />
+                            {% else %}
+                                <div class="w-20 h-20 flex items-center justify-center bg-gray-100 text-gray-400 rounded border border-gray-300 italic">Nėra</div>
+                            {% endif %}
+                            <span>{{ item.product.name }}</span>
+                        </td>
+                        <td class="text-left py-3 px-4">{{ "%.2f"|format(item.product.price) }} €</td>
+                        <td class="text-left py-3 px-4">
+                            <form action="{{ url_for('user.update_quantity', product_id=item.product.id) }}" method="POST" class="flex items-center space-x-2">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-16 border border-gray-300 rounded px-2 py-1" />
+                                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">Atnaujinti</button>
+                            </form>
+                        </td>
+                        <td class="text-left py-3 px-4">{{ "%.2f"|format(item.product.price * item.quantity) }} €</td>
+                        <td class="text-left py-3 px-4">
+                            <form action="{{ url_for('user.remove_item', product_id=item.product.id) }}" method="POST">
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Pašalinti</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="text-right mt-6">
+                <p class="text-2xl font-bold">Bendra suma: {{ "%.2f"|format(total) }} €</p>
+                <form action="{{ url_for('user.buy_cart_success') }}" method="POST" class="mt-4">
+                    <button type="submit" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-300">
+                        Pirkti
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-center text-gray-600">Jūsų krepšelis tuščias.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

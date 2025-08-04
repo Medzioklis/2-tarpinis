@@ -7,11 +7,21 @@
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 class="text-xl font-semibold mb-2">Vartotojai</h2>
             <p class="text-3xl font-bold">{{ stats.user_count }}</p>
-            
+            <p class="py-2"></p>
+            <p><a href="{{ url_for('admin.user_list') }}" class="py-2 px-2 mt-8 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Vartotojų valdymas</a></p>
         </div>
-    </div>
-    <div class="flex justify-between items-center">
-        <a href="{{ url_for('admin.user_list') }}" class="py-2 px-2 mt-8 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Vartotojų valdymas</a>
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-xl font-semibold mb-2">Prekes</h2>
+            <p class="text-3xl font-bold">{{ stats.product_count }}</p>
+            <p class="py-2"></p>
+            <p><a href="{{ url_for('product.list_products') }}" class="py-2 px-2 mt-8 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Prekių valdymas</a></p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 class="text-xl font-semibold mb-2">Viso parduota už</h2>
+            <p class="text-3xl font-bold">{{ "%.2f"|format(stats.total_sales) }} €</p>
+            <p class="py-2"></p>
+            <p><a href="{{ url_for('admin.orders_list')}}" class="py-2 px-2 mt-8 font-medium text-white bg-green-600 rounded hover:bg-grey-400 transition duration-300">Užsakymų valdymas</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}

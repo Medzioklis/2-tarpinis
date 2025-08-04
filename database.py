@@ -5,15 +5,23 @@ from sqlalchemy.orm import DeclarativeBase
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import datetime
+import os
 
 
 # initialize first flask
 app = Flask(__name__)
 app.secret_key = 'futbolas'
 
+# Kelias, kur saugosim įkeltus failus
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+
 # Set Databse patch and data
 # app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///parduotuve.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ugne:Labasrytas2025!@35.242.231.50:3306/football' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://marius:Labasrytas2025!@35.242.231.50:3306/football' 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 
 class Base(DeclarativeBase):
     createdBy = Column(String(50), nullable=False, default='System')

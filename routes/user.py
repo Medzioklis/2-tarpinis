@@ -1,27 +1,148 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from services.user_functions import top_up_balance
+from services.order_services import get_cart_contents, add_product_to_cart, create_order_from_cart
+from services.product_services import get_product_by_id
+from services.order_services import update_cart_item_quantity, remove_item_from_cart
+from models.cart_class import Cart, db
+from sqlalchemy import select
+from datetime import datetime
+from models.order_class import Order, OrderItem
 
 
-user_bp = Blueprint('user', __name__, url_prefix='/user', template_folder='../templates')
+user_bp = Blueprint('user', __name__, url_prefix='/user')
 
 
 @user_bp.route('/')
 @login_required
-def user_dashboard():
+def dashboard():
     if current_user.user_role != 2:
         flash("Neturite prieigos prie naudotojo puslapio.", "danger")
-        return redirect(url_for('login.login'))
-    return render_template('user_dashboard.html', user=current_user)
+        return redirect(url_for('auth.login'))
+    return render_template('user/dashboard.html', user=current_user)
 
-@user_bp.route('/balance')
-@login_required
-def view_balance():
-    return render_template('balance_view.html', balance=current_user.balance)
+
 
 @user_bp.route('/add_balance', methods = ['GET','POST'])
 @login_required
 def add_balance():
     return top_up_balance()
 
+@user_bp.route('/cart')
+@login_required
+def cart():
+    try:
+        cart_items, total = get_cart_contents(current_user.id)
+        return render_template('user/cart.html', title='Krepšelis', cart_items=cart_items, total=total)
+    except Exception as e:
+        flash(f"Klaida gaunant krepšelio turinį: {e}", "danger")
+        return render_template('user/cart.html', title='Krepšelis', cart_items=[], total=0)
 
+@user_bp.route('/add_to_cart/<int:product_id>', methods=['POST'])
+@login_required
+def add_to_cart(product_id):
+    product = get_product_by_id(product_id)
+    if product and product.stock > 0:
+        try:
+            add_product_to_cart(current_user.id, product_id)
+            flash(f'Prekė "{product.name}" pridėta į krepšelį.', 'success')
+        except Exception as e:
+            flash(f'Nepavyko pridėti prekės: {e}', 'danger')
+    elif not product:
+        flash('Prekė nerasta.', 'danger')
+    else:
+        flash(f'Atsiprašome, prekės "{product.name}" laikinai neturime.', 'warning')
+    return redirect(url_for('home.products'))
+
+@user_bp.route('/buy_cart', methods=['POST'])
+@login_required
+def buy_cart():
+    try:
+        order = create_order_from_cart(current_user.id)
+        flash(f'Ačiū, kad pirkote! Jūsų užsakymo Nr. {order.id}.', 'success')
+        return redirect(url_for('home.index'))
+    except ValueError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('user.cart'))
+    except Exception as e:
+        flash(f'Įvyko nenumatyta pirkimo klaida: {e}', 'danger')
+        return redirect(url_for('user.cart'))
+    
+@user_bp.route('/cart/update/<product_id>', methods=['POST'])
+@login_required
+def update_quantity(product_id):
+    try:
+        quantity = int(request.form.get('quantity'))
+        if quantity < 1:
+            flash("Kiekis turi būti bent 1.", "warning")
+        else:
+            update_cart_item_quantity(current_user.id, product_id, quantity)
+            flash("Prekės kiekis atnaujintas.", "success")
+    except ValueError as e:
+        flash(str(e), "danger")
+    except Exception as e:
+        flash(f"Klaida atnaujinant kiekį: {e}", "danger")
+    return redirect(url_for('user.cart'))
+
+@user_bp.route('/cart/remove/<product_id>', methods=['POST'])
+@login_required
+def remove_item(product_id):
+    try:
+        remove_item_from_cart(current_user.id, product_id)
+        flash("Prekė pašalinta iš krepšelio.", "info")
+    except Exception as e:
+        flash(f"Klaida šalinant prekę: {e}", "danger")
+    return redirect(url_for('user.cart'))
+
+@user_bp.route('/buy_cart_success', methods=['POST'])
+@login_required
+def buy_cart_success():
+    try:
+        stmt = select(Cart).where(Cart.user_id == current_user.id)
+        cart_items = db.session.scalars(stmt).all()
+
+        if not cart_items:
+            flash("Krepšelis tuščias.", "danger")
+            return redirect(url_for("user.cart"))
+
+        total = sum(item.product.price * item.quantity for item in cart_items)
+
+        if current_user.user_balance < total:
+            flash("Nepakanka lėšų.", "danger")
+            return redirect(url_for("user.cart"))
+
+        current_user.user_balance -= total
+
+        # Sukuriamas užsakymas su total_price
+        new_order = Order(user_id=current_user.id, timestamp=datetime.now(), total_price=total)
+        db.session.add(new_order)
+        db.session.flush()  # kad sugeneruotų new_order.id
+
+        for item in cart_items:
+            if item.product.stock >= item.quantity:
+                item.product.stock -= item.quantity
+
+                order_item = OrderItem(
+                    order_id=new_order.id,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price_per_unit=item.product.price
+                )
+                db.session.add(order_item)
+
+                db.session.delete(item)
+            else:
+                flash(f'Prekės "{item.product.name}" likutis per mažas.', "danger")
+                return redirect(url_for("user.cart"))
+
+        db.session.commit()
+
+        flash("Prekės sėkmingai įsigytos!", "success")
+        return render_template("store/purchase_success.html", user=current_user, items=cart_items)
+    
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Klaida apdorojant užsakymą: {e}", "danger")
+        return redirect(url_for("user.cart"))
+
+    

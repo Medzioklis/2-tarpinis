@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from forms.user_crud_form import AddUserForm, UpdateUserForm, db # Pakeiskite 'your_app'
-from services import admin_services # Importuojame servisus
-from services.user_functions import admin_required
+from forms.user_crud_form import AddUserForm, UpdateUserForm, db 
+from services import admin_services 
+from services.auth_functions import admin_required
 from sqlalchemy import select, func
 from models.user_class import User
+from models.product_class import Product
+from models.order_class import Order
 
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -14,15 +16,19 @@ def dashboard():
     admin_required()
     try:
         stats = {
-            'user_count': db.session.scalar(select(func.count(User.id)))
-            # 'product_count': product_service.Product.query.count(),
-            # 'total_sales': db.session.query(db.func.sum(Order.total_price)).scalar() or 0
+            'user_count': db.session.scalar(select(func.count(User.id)).where(User.deleted == False)),
+            'product_count': db.session.scalar(select(func.count(Product.id)).where(Product.deleted == False)),
+            'total_sales': db.session.scalar(select(func.sum(Order.total_price)).where(Order.deleted == False)) or 0
+            
         }
         return render_template('admin/dashboard.html', title='Admin Panelė', stats=stats)
     except Exception as e:
         flash(f"Klaida gaunant statistiką: {e}", "danger")
         return render_template('admin/dashboard.html', title='Admin Panelė', stats={'user_count': 0, 'product_count': 0, 'total_sales': 0})
-# READ: Vartotojų sąrašo rodymas
+    
+# ========================================= USER CRUD ===========================================================================================
+
+# USER READ Vartotojų sąrašo rodymas
 @admin_bp.route('/users')
 def user_list():
     admin_required()
@@ -33,7 +39,7 @@ def user_list():
         flash(f"Klaida gaunant vartotojų sąrašą: {e}", "danger")
         return render_template('admin/users.html', users=[], title="Vartotojų valdymas")
 
-# CREATE: Naujo vartotojo pridėjimas
+# USER CREATE: Naujo vartotojo pridėjimas
 @admin_bp.route('/user_add', methods=['GET', 'POST'])
 def user_add():
     admin_required()
@@ -47,7 +53,7 @@ def user_add():
             flash(f"Klaida pridedant vartotoją: {e}", "danger")
     return render_template('admin/add_user.html', form=form, title="Pridėti vartotoją")
 
-# UPDATE: Vartotojo redagavimas
+# USER UPDATE: Vartotojo redagavimas
 @admin_bp.route('/users/update/<int:user_id>', methods=['GET', 'POST'])
 def update_user(user_id):
     admin_required()
@@ -73,8 +79,8 @@ def update_user(user_id):
         
     return render_template('admin/update_user.html', form=form, user=user, title="Redaguoti vartotoją")
 
-# DELETE: Vartotojo ištrynimas
-@admin_bp.route('/users/delete/<int:user_id>', methods=['POST'])
+# USER DELETE: Vartotojo ištrynimas
+@admin_bp.route('/users/delete/<user_id>', methods=['POST'])
 def delete_user(user_id):
     admin_required()
     try:
@@ -86,3 +92,32 @@ def delete_user(user_id):
     except Exception as e:
         flash(f"Klaida trinant vartotoją: {e}", "danger")
     return redirect(url_for('admin.user_list'))
+
+# ========================================= END USER CRUD =================================================================================
+
+# ========================================= ORDER =========================================================================================
+
+@admin_bp.route('/orders_list')
+def orders_list():
+    admin_required()
+    try:
+        orders = admin_services.get_all_orders()
+        return render_template('admin/orders_view.html', orders=orders, title="Užsakymų sąrašas")
+    except Exception as e:
+        flash(f"Klaida gaunant užsakymų sąrašą: {e}", "danger")
+        return render_template('admin/dashboard.html')
+
+@admin_bp.route('/orders/delete/<order_id>' , methods=['POST'])
+def order_delete(order_id):
+    admin_required()
+    try:
+        order = db.session.get(Order, order_id)
+        if order:
+            order.deleted = True
+            db.session.commit()
+            flash(f"Užsakymas {order_id} sėkmingai ištrintas.", 'success')
+        else:
+            flash(f"Užsakymas {order_id} nerastas.", 'danger')
+    except Exception as e:
+        flash(f"Klaida trinant užsakymą: {e}", "danger")
+    return redirect(url_for('admin.orders_list'))

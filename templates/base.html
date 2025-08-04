@@ -26,27 +26,39 @@
                 <div class="flex space-x-7">
                     <div>
                         <!-- Svetainės logotipas -->
-                        <a href="{{ url_for('home.index') }}" class="flex items-center py-4 px-2">
-                            <span class="font-semibold text-gray-500 text-lg">Futbolo prekės</span>
-                        </a>
+                        {% if current_user.is_authenticated %}
+                            <span class="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">Sveiki, {{ current_user.user_name }} {{ current_user.user_lastname }}</span>
+                        {% else %}
+                            <span class="flex items-center py-4 px-2 font-semibold text-gray-500 text-lg">Futbolo prekių parduotuvė</span>
+                        {% endif %}
                     </div>
                     <!-- Pagrindinės navigacijos nuorodos -->
                     <div class="hidden md:flex items-center space-x-1">
-                        <a href="{{ url_for('home.index') }}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Pagrindinis</a>
+                    {% if current_user.user_role == 2 %}
+                        <a href="{{ url_for('user.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Vartotojo profilis</a>
+                    {% endif %}
+                        <a href="{{ url_for('home.products') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Prekės</a>
                     </div>
                 </div>
                 <!-- Antrinės navigacijos nuorodos (dešinėje) -->
                 <div class="hidden md:flex items-center space-x-3 ">
                     {% if current_user.is_authenticated %}
                         {% if current_user.user_role == 1 %}
-                            <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-grey-400 transition duration-300">Admin Panelė</a>
+                            <a href="{{ url_for('admin.dashboard') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Admin Panelė</a>
+                            <a href="{{ url_for('statistic.stats') }}" class="py-2 px-2 font-medium text-white bg-teal-500 rounded hover:bg-teal-800 transition duration-300">Pardavimų statistika</a>
+
+                        {% endif %}
+                        {% if current_user.user_role == 2 %}
+                            <h3>Jūsų balansas: {{ current_user.user_balance }} €</h3>
+                            <a href="{{ url_for('user.add_balance') }}" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-green-800 transition duration-300">Papildyti balansą</a>
+                            <a href="{{ url_for('user.cart') }}" class="py-2 px-2 font-medium text-white bg-green-600 rounded hover:bg-green-800 transition duration-300">Krepšelis</a>
                         {% endif %}
         
                     
-                        <a href="{{ url_for('auth.logout') }}" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Atsijungti</a>
+                        <a href="{{ url_for('auth.logout') }}" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-800 transition duration-300">Atsijungti</a>
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" class="py-2 px-2 font-medium text-gray-500 rounded hover:bg-gray-200 transition duration-300">Prisijungti</a>
-                        <a href="{{ url_for('auth.register') }}" class="py-2 px-2 font-medium text-white bg-green-500 rounded hover:bg-green-400 transition duration-300">Registruotis</a>
+                        <a href="{{ url_for('auth.register') }}" class="py-2 px-2 font-medium text-white bg-green-500 rounded hover:bg-green-800 transition duration-300">Registruotis</a>
                     {% endif %}
                 </div>
                 <!-- Mobiliosios versijos meniu mygtukas -->

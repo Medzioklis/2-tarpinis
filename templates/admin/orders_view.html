@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 sm:px-8">
+    <div class="py-8">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold leading-tight">Užsakymų valdymas</h2>
+        </div>
+        <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-6">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="py-3 px-6">ID</th>
+                        <th scope="col" class="py-3 px-6">Vardas</th>
+                        <th scope="col" class="py-3 px-6">Pavardė</th>
+                        <th scope="col" class="py-3 px-6">Užsakymo data</th>
+                        <th scope="col" class="py-3 px-6">Suma</th>
+                        <th scope="col" class="py-3 px-6">Veiksmai</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="py-4 px-6 font-medium text-gray-900">{{ order.id }}</td>
+                        <td class="py-4 px-6">{{ order.user.user_name }}</td>
+                        <td class="py-4 px-6">{{ order.user.user_lastname }}</td>
+                        <td class="py-4 px-6">{{ order.timestamp }}</td>
+                        <td class="py-4 px-6">{{ order.total_price }} €</td>
+                        <td class="py-4 px-6 flex items-center space-x-3">
+                            <form action="{{ url_for('admin.order_delete', order_id=order.id) }}" method="POST" onsubmit="return confirm('Ar tikrai norite ištrinti šį užsakymą ?');">
+                                <button type="submit" class="font-medium text-red-600 hover:underline">Ištrinti</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">Užsakymų nerasta.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
