@@ -44,7 +44,7 @@
                         </td>
                         <td class="py-4 px-6">
                             {% if product.image_filename %}
-                                <img src="{{ url_for('static', filename='image/' + product.image_filename) }}" alt="Prekės nuotrauka" class="h-12 w-12 object-cover rounded">
+                                <img src="{{ url_for('static', filename='images/' + product.image_filename) }}" alt="Prekės nuotrauka" class="h-12 w-12 object-cover rounded">
                             {% else %}
                                 <span class="text-gray-400 italic">Nėra</span>
                             {% endif %}

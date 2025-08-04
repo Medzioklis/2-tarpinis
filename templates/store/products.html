@@ -17,10 +17,10 @@
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <!-- Nuotrauka -->
             {% if product.image_filename %}
-                <img src="{{ url_for('static', filename='image/' ~ product.image_filename) }}" alt="{{ product.name }}" class="w-full h-48 object-contain">
+                <img src="{{ url_for('static', filename='images/' ~ product.image_filename) }}" alt="{{ product.name }}" class="w-full h-48 object-contain">
             {% else %}
                 <div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 italic">
-                    Nuotrauka nėra
+                    Nuotraukos nėra
                 </div>
             {% endif %}
             <div class="p-6">

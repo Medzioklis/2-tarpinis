@@ -9,7 +9,7 @@
         <!-- Čia atnaujintas informacijos blokas su nuotrauka ir mygtuku -->
         <div class="flex flex-col md:flex-row md:items-center md:space-x-6 mb-4">
             {% if product.image_filename %}
-                <img src="{{ url_for('static', filename='image/' ~ product.image_filename) }}" alt="{{ product.name }}" class="w-48 h-48 object-contain rounded border border-gray-300" />
+                <img src="{{ url_for('static', filename='images/' ~ product.image_filename) }}" alt="{{ product.name }}" class="w-48 h-48 object-contain rounded border border-gray-300" />
             {% else %}
                 <div class="w-48 h-48 flex items-center justify-center bg-gray-100 text-gray-400 rounded border border-gray-300 italic">Nėra nuotraukos</div>
             {% endif %}
